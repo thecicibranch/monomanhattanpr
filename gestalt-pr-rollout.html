@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Gestalt Atelier — PR Rollout</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -195,6 +196,39 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 @media(max-width:400px){
   .nav button{padding:12px 14px;font-size:10px}
 }
+
+/* ── Contacts tab ─────────────────────────────────────────────── */
+.tier-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.tier-btn{padding:8px 16px;border-radius:99px;border:1.5px solid var(--rule);background:#fff;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.06em;cursor:pointer;transition:all 0.15s;color:var(--muted)}
+.tier-btn.active,.tier-btn:hover{background:var(--deep);color:var(--paper);border-color:var(--deep)}
+.search-box{width:100%;padding:12px 16px;border:1.5px solid var(--rule);border-radius:8px;font-family:'Syne',sans-serif;font-size:14px;background:#fff;outline:none;margin-bottom:20px;transition:border 0.2s}
+.search-box:focus{border-color:var(--accent)}
+.contact-grid{display:flex;flex-direction:column;gap:2px;margin-bottom:32px}
+.contact-card{background:#fff;border:1px solid var(--rule);border-radius:0;border-left:3px solid transparent;transition:all 0.15s;overflow:hidden}
+.contact-card:first-child{border-radius:8px 8px 0 0}
+.contact-card:last-child{border-radius:0 0 8px 8px}
+.contact-card.t1{border-left-color:var(--accent)}
+.contact-card.t2{border-left-color:var(--A)}
+.contact-card.t3{border-left-color:var(--rule)}
+.contact-header{padding:16px 20px;cursor:pointer;display:flex;align-items:center;gap:14px}
+.contact-header:hover{background:#faf9f6}
+.contact-rank{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);min-width:28px;flex-shrink:0}
+.contact-name{font-size:15px;font-weight:600;color:var(--ink);flex:1;min-width:0}
+.contact-writer{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);white-space:nowrap}
+.contact-type-badge{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:0.07em;padding:2px 8px;border-radius:3px;flex-shrink:0;text-transform:uppercase}
+.contact-type-badge.newsletter{background:#e8f5e9;color:#2e7d32}
+.contact-type-badge.social{background:#e3f2fd;color:#1565c0}
+.contact-body{padding:0 20px 20px;border-top:1px solid var(--rule)}
+.contact-section{margin-top:16px}
+.contact-section-label{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.contact-section-text{font-size:14px;color:#444;line-height:1.7}
+.contact-steps{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.contact-steps li{display:flex;gap:10px;font-size:13px;color:#444;line-height:1.6}
+.contact-steps li::before{content:attr(data-n);font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:var(--accent);flex-shrink:0;width:18px;padding-top:1px}
+.contact-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.contact-meta-item{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);background:#f5f3ee;padding:4px 10px;border-radius:4px}
+.tier-divider{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin:24px 0 10px;display:flex;align-items:center;gap:12px}
+.tier-divider::after{content:'';flex:1;height:1px;background:var(--rule)}
 </style>
 </head>
 <body>
@@ -220,6 +254,10 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <button onclick="switchTab('event',this)">Launch Event</button>
   <button onclick="switchTab('digital',this)">Digital Strategy</button>
   <button onclick="switchTab('kpis',this)">KPIs & Intern</button>
+  <button onclick="switchTab('contacts',this)">Contact Lists</button>
+  <button onclick="switchTab('resourcesA',this)">Partner A Resources</button>
+  <button onclick="switchTab('resourcesB',this)">Partner B Resources</button>
+  <button onclick="switchTab('local',this)">Local Outreach Map</button>
 </nav>
 
 <main class="main">
@@ -486,7 +524,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <h1 class="section-title">Role <em>division</em></h1>
   <p class="section-sub">Two-person agency · divided by strength · unified by client</p>
 
-  <div class="callout A" style="margin-bottom:24px">
+  <div class="callout" style="border-color:var(--both);background:#faf7f0;margin-bottom:24px">
     <div class="callout-icon">◈</div>
     <div class="callout-text">
       <div class="ct-title">Joint ownership</div>
@@ -1240,6 +1278,585 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 </div>
 
+
+<!-- ── CONTACTS ──────────────────────────────────────────────────── -->
+<div class="tab-panel" id="tab-contacts">
+  <h1 class="section-title">Contact <em>lists</em></h1>
+  <p class="section-sub">300 contacts · ranked by strategic fit · all outreach via email · full pitch guidance per contact</p>
+
+  <div class="callout accent">
+    <div class="callout-icon">◈</div>
+    <div class="callout-text">
+      <div class="ct-title">How this list is ranked</div>
+      <div class="ct-body"><strong>Tier 1 — Priority:</strong> Direct audience fit, named writers with warm angles, or existing relationships. Contact these first. &nbsp;|&nbsp; <strong>Tier 2 — High Value:</strong> Strong audience fit that requires a tailored angle and careful positioning. &nbsp;|&nbsp; <strong>Tier 3 — Supporting:</strong> Valuable for amplification, geographic relevance, or specific niche reach. Most contacts below require finding direct email via their mobile bio or website — noted per contact.</div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+    <input type="text" class="search-box" style="flex:1;min-width:200px;margin-bottom:0" placeholder="Search contacts, outlets, writers, categories..." oninput="filterContacts(this.value)"/>
+  </div>
+
+  <div class="tier-bar" id="tier-filter">
+    <button class="tier-btn active" onclick="setTier('all',this)">All contacts (40 featured)</button>
+    <button class="tier-btn" onclick="setTier('1',this)">⬤ Tier 1 — Priority (11)</button>
+    <button class="tier-btn" onclick="setTier('2',this)">⬤ Tier 2 — High Value (19)</button>
+    <button class="tier-btn" onclick="setTier('3',this)">⬤ Tier 3 — Supporting (10)</button>
+    <button class="tier-btn" onclick="setTier('newsletter',this)">Newsletters only</button>
+    <button class="tier-btn" onclick="setTier('social',this)">Social / press only</button>
+  </div>
+
+  <div id="contacts-container"></div>
+
+  <div class="callout" style="margin-top:8px">
+    <div class="callout-icon">📋</div>
+    <div class="callout-text">
+      <div class="ct-title">Finding direct emails — the "[Check Mobile Bio]" contacts</div>
+      <div class="ct-body">The majority of contacts in the full spreadsheets list "[Check Mobile Bio]" for their email. The standard method: (1) Open the Instagram account, (2) tap the email button in the bio if present, or (3) search "[Name] email" or "[Publication] editorial contact" to find their press/editorial inbox. For Substack newsletters, most writers have a direct reply-to address visible when you subscribe to a free issue — subscribe, then email the reply-to directly. Never cold-DM and cold-email simultaneously.</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── PARTNER A RESOURCES ─────────────────────────────────────────── -->
+<div class="tab-panel" id="tab-resourcesA">
+  <h1 class="section-title">Partner A <em>resources</em></h1>
+  <p class="section-sub">Content · editorial · media relations · writing tools · video production</p>
+
+  <div class="callout" style="border-color:var(--A);background:#f8f7fe">
+    <div class="callout-icon" style="color:var(--A)">◈</div>
+    <div class="callout-text">
+      <div class="ct-title">Partner A's core job for Gestalt Atelier</div>
+      <div class="ct-body">Every word that represents Gestalt Atelier in the world — press releases, pitch letters, media kit copy, Joseph's bio, LinkedIn articles, "The Gestalt Dispatch" newsletter, outreach emails, and all video scripts. These tools make that job faster and better.</div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Media Kit & Press Materials</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card A">
+      <div class="card-top"><div>
+        <div class="card-title">Prezly — Online Media Kit & Newsroom Builder</div>
+        <div class="card-body">Build Gestalt Atelier's digital media kit and newsroom in one place. Embed images, videos, press releases, and Joseph's bio. Journalists can access everything without waiting for an email attachment. Far more impressive than a PDF.</div>
+      </div></div>
+      <div class="card-meta">prezly.com · Free trial available · ~$50–$90/month</div>
+    </div>
+    <div class="card A">
+      <div class="card-top"><div>
+        <div class="card-title">Xtensio — Media Kit Templates</div>
+        <div class="card-body">Clean, beautifully designed media kit templates that can be customised to Gestalt's visual identity. Export as PDF or share as a live link. Faster than building from scratch in InDesign.</div>
+      </div></div>
+      <div class="card-meta">xtensio.com · Free tier available · $8–$25/month for premium</div>
+    </div>
+    <div class="card A">
+      <div class="card-top"><div>
+        <div class="card-title">Prowly — Media Database & Outreach CRM</div>
+        <div class="card-body">Searchable journalist database with direct email contacts, audience analytics, and built-in pitch tracking. Build and manage Gestalt's press list, track who opened what, and manage follow-ups — all in one place. Integrates with Semrush audience data.</div>
+      </div></div>
+      <div class="card-meta">prowly.com · ~$189/month · 7-day free trial</div>
+    </div>
+    <div class="card A">
+      <div class="card-top"><div>
+        <div class="card-title">Muck Rack — Journalist Research & PR Coverage Tracking</div>
+        <div class="card-body">Find the specific editor at GQ or WSJ covering luxury lifestyle, see their recent articles, and track when Gestalt Atelier gets mentioned in press. Invaluable for tailoring pitches to specific journalists rather than editorial inboxes.</div>
+      </div></div>
+      <div class="card-meta">muckrack.com · Custom pricing · Free limited search available</div>
+    </div>
+    <div class="card A">
+      <div class="card-top"><div>
+        <div class="card-title">PressHook — AI Pitch Campaigns & Media Kit Distribution</div>
+        <div class="card-body">AI-powered platform for building targeted pitch campaigns, identifying appropriate journalists, and distributing media kits. Useful for Phase 2 outreach when hitting multiple outlets simultaneously.</div>
+      </div></div>
+      <div class="card-meta">presshook.com · Pricing on request</div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Writing & Content Tools</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card A">
+      <div class="card-top"><div>
+        <div class="card-title">Claude (Anthropic) — Long-form Drafting & Refinement</div>
+        <div class="card-body">Use Claude for drafting Joseph's LinkedIn articles, press release first drafts, bio iterations, and newsletter copy. Prompt it with Gestalt's messaging framework and approved language list — it will stay on-brand. Never send AI-generated copy without significant human editing.</div>
+      </div></div>
+      <div class="card-meta">claude.ai · Free tier / Pro $20/month · Use for first drafts only — always edit</div>
+    </div>
+    <div class="card A">
+      <div class="card-top"><div>
+        <div class="card-title">Hemingway Editor — Clarity & Readability Check</div>
+        <div class="card-body">Paste any written piece into Hemingway to check for passive voice, overly complex sentences, and readability grade level. Gestalt's writing should be Grade 10–12 — intellectual but accessible. Good final check before sending any press material.</div>
+      </div></div>
+      <div class="card-meta">hemingwayapp.com · Free web version · $19.99 desktop app (one-time)</div>
+    </div>
+    <div class="card A">
+      <div class="card-top"><div>
+        <div class="card-title">Substack — "The Gestalt Dispatch" Newsletter Platform</div>
+        <div class="card-body">The best platform for The Gestalt Dispatch — clean reading experience, built-in subscriber management, analytics on open rates, and an archive that builds over time. Free to launch; Substack takes 10% only on paid subscriptions (keep it free for now).</div>
+      </div></div>
+      <div class="card-meta">substack.com · Free to launch · Launch target: Week 7 (Jul 13–19)</div>
+    </div>
+    <div class="card A">
+      <div class="card-top"><div>
+        <div class="card-title">LinkedIn Article Tools — Joseph's Thought Leadership</div>
+        <div class="card-body">LinkedIn's native article editor is sufficient for Joseph's posts. Key tip: publish from Joseph's personal profile, not a company page. Articles perform far better with a personal author in the professional image space. Partner A writes, Joseph approves and publishes.</div>
+      </div></div>
+      <div class="card-meta">linkedin.com · Free · First article target: Week 11 (Aug 10–16)</div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Video Production (Educational Series)</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card A">
+      <div class="card-top"><div>
+        <div class="card-title">CapCut / DaVinci Resolve — Video Editing</div>
+        <div class="card-body">CapCut for quick, social-ready edits (Reels, TikTok, LinkedIn clips). DaVinci Resolve for the more polished long-form YouTube content. The educational series ("The Language of Style") should be shot cleanly and edited simply — the content is the value, not the production style.</div>
+      </div></div>
+      <div class="card-meta">capcut.com (free) · davinciresolve.com (free) · First 2 videos target: Week 8 (Jul 20–26)</div>
+    </div>
+    <div class="card A">
+      <div class="card-top"><div>
+        <div class="card-title">Descript — Transcript-Based Video Editing & Captions</div>
+        <div class="card-body">Edit video by editing the transcript — fastest workflow for interview and talking-head content. Auto-generates captions (essential for LinkedIn and TikTok autoplay). Export burned-in captions for every video before publishing.</div>
+      </div></div>
+      <div class="card-meta">descript.com · Free tier / $12–$24/month · Captions on every video, always</div>
+    </div>
+    <div class="card A">
+      <div class="card-top"><div>
+        <div class="card-title">Rev — Professional Transcription & Captions</div>
+        <div class="card-body">For any video that needs broadcast-quality captions or transcripts (press interview recordings, event footage). More accurate than auto-generated captions for proper nouns like "Gestalt" and "GESTALT method."</div>
+      </div></div>
+      <div class="card-meta">rev.com · $1.50/minute transcription · Use for key video assets</div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Media Monitoring & Intelligence</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards">
+    <div class="card A">
+      <div class="card-top"><div>
+        <div class="card-title">Google Alerts — Free Brand Monitoring</div>
+        <div class="card-body">Set up daily alerts for: "Gestalt Atelier", "Joseph [Last Name]", "image consultancy NYC", "luxury styling Financial District", "quiet luxury NYC". Free and sufficient for early-stage monitoring. Check daily as part of the intern's morning routine.</div>
+      </div></div>
+      <div class="card-meta">alerts.google.com · Free · Set up from Day 1</div>
+    </div>
+    <div class="card A">
+      <div class="card-top"><div>
+        <div class="card-title">Talkwalker Alerts — Enhanced Media Monitoring</div>
+        <div class="card-body">Upgrade from Google Alerts when press coverage starts coming in. Tracks news sites, blogs, and social media simultaneously. Good for monitoring competitor coverage and the "quiet luxury" cultural conversation.</div>
+      </div></div>
+      <div class="card-meta">talkwalker.com/alerts · Free basic version · Upgrade when coverage picks up</div>
+    </div>
+    <div class="card A">
+      <div class="card-top"><div>
+        <div class="card-title">Signal AI — Reputation Intelligence (Later Stage)</div>
+        <div class="card-body">For when Gestalt has enough press to track. Detects early warning signs for reputation management, crisis triggers, and share-of-voice analytics. Overkill for pre-opening but worth knowing about for Year 1.</div>
+      </div></div>
+      <div class="card-meta">signal-ai.com · Enterprise pricing · Consider post-opening</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PARTNER B RESOURCES ─────────────────────────────────────────── -->
+<div class="tab-panel" id="tab-resourcesB">
+  <h1 class="section-title">Partner B <em>resources</em></h1>
+  <p class="section-sub">Activation · event planning · creative design · relationship management</p>
+
+  <div class="callout" style="border-color:var(--B);background:#f3fbf8">
+    <div class="callout-icon" style="color:var(--B)">◈</div>
+    <div class="callout-text">
+      <div class="ct-title">Partner B's core job for Gestalt Atelier</div>
+      <div class="ct-body">Everything that exists in physical space — the launch event "The Art of Presence", the brand shoot, every hotel and hospitality relationship, the invitation design, the atelier's visual identity, and the concierge referral network. These tools make that job faster and better.</div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Event Planning & Venue Sourcing</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Hopskip — Venue Sourcing Platform</div>
+        <div class="card-body">Best venue sourcing platform for 2026 according to event planners. Purpose-built for finding and booking event spaces with modern RFP tools. Use to source the venue for "The Art of Presence" — filter for private dining rooms and gallery spaces in FiDi and Tribeca.</div>
+      </div></div>
+      <div class="card-meta">myhopskip.com · Free for planners · Target venue confirmed by Week 6–7 (Jul 6–19)</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Cvent Supplier Network — Venue & Vendor Research</div>
+        <div class="card-body">Access thousands of vetted venues and vendors. Useful for comparing FiDi private event spaces and sourcing caterers, AV teams, and florists who work in the luxury tier. Cvent's supplier network is the industry standard for vetting.</div>
+      </div></div>
+      <div class="card-meta">cvent.com · Free supplier search · Pricing on request for full platform</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Ripluo — Event Management (Free Tier Sufficient)</div>
+        <div class="card-body">For a single pre-opening event, Ripluo's free tier covers: timeline builder, budget tracker, task management, floor plan designer, and real-time team messaging. No need for an enterprise platform for one 30–50 person event.</div>
+      </div></div>
+      <div class="card-meta">ripluo.com · Free for 5 active events · Upgrade if managing multiple events</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Partiful — Invitation Management & RSVPs</div>
+        <div class="card-body">The current gold standard for curated event invitations. Beautiful digital invites with RSVP tracking. Feels private and personal rather than Eventbrite-mass. Perfect for "The Art of Presence" guest management. Pair with a physical invitation for anchor guests.</div>
+      </div></div>
+      <div class="card-meta">partiful.com · Free · Invitations out target: Week 9 (Jul 27–Aug 2)</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Nowadays.ai — Venue RFP Automation</div>
+        <div class="card-body">AI-powered venue negotiation and RFP automation. Sends RFPs to multiple venues simultaneously and manages responses. Saves days of back-and-forth. Use for the launch event venue sourcing in June.</div>
+      </div></div>
+      <div class="card-meta">nowadays.ai · Pricing on request · Use in Week 5–6 (Jun 29–Jul 12)</div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Creative Design & Visual Identity</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Canva Pro — Brand Templates & Collateral</div>
+        <div class="card-body">Build all Gestalt Atelier's reusable design assets in Canva: social graphics, proposal templates, press kit layouts, referral cards for hotel concierge teams, and event programmes. Lock brand colours and fonts so every asset stays consistent without starting from scratch.</div>
+      </div></div>
+      <div class="card-meta">canva.com · ~$15/month Pro · Set up brand kit in Week 1</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Adobe Express — Premium Visual Collateral</div>
+        <div class="card-body">For collateral that needs to look distinctly premium — the event invitation, the hotel referral card, and the media kit cover. Adobe Express templates have a more refined aesthetic than Canva for luxury positioning. Export print-ready PDFs.</div>
+      </div></div>
+      <div class="card-meta">adobe.com/express · Free / $9.99/month Pro · Use for print-ready deliverables</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Moo — Premium Print: Business Cards, Referral Cards, Invitations</div>
+        <div class="card-body">The standard for luxury print quality in NYC professional circles. Use Moo for: Joseph's business cards (use their Luxe finish with gold edge), hotel concierge referral cards, and any physical collateral that touches the atelier's hospitality relationships. Print quality matters at this tier.</div>
+      </div></div>
+      <div class="card-meta">moo.com · Premium pricing · Order early — allow 2 weeks for Luxe finishes</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Behance / Pinterest — Visual Reference & Mood Boards</div>
+        <div class="card-body">Use Behance to research architecture-meets-fashion editorial aesthetics for the brand shoot brief. Use Pinterest to build the visual mood board for the atelier interior, Joseph's brand photography direction, and the event design. Send the mood board to any creative collaborators before briefing.</div>
+      </div></div>
+      <div class="card-meta">behance.net / pinterest.com · Free · Build mood boards in Week 1</div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Photography & Brand Shoot</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Reel — Photographer Booking (NYC Creatives)</div>
+        <div class="card-body">Marketplace for booking vetted freelance photographers and videographers in NYC. Filter by editorial, fashion, and architectural photography. For Joseph's brand shoot, look for someone with a portfolio that includes editorial menswear or architectural interiors — not wedding or lifestyle photographers.</div>
+      </div></div>
+      <div class="card-meta">reel.fyi · Free to search · Budget $1,500–$4,000 for a half-day editorial shoot</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Shotkit / VSCO — Photo Editing & Presets</div>
+        <div class="card-body">Establish a consistent colour grade across all Gestalt Atelier imagery. The visual identity should feel architectural: cool-warm neutrals, deep shadows, precise lighting. Apply the same preset to every asset — consistency is the luxury signal.</div>
+      </div></div>
+      <div class="card-meta">vsco.co · ~$30/year · Pick one preset and use it on everything</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Dropbox or Google Drive — Asset Management & Sharing</div>
+        <div class="card-body">All high-resolution brand images, logos, and approved collateral live in one shared folder with clear naming conventions. Press contacts need assets instantly — a well-organised shared folder means Partner A can send a link rather than hunting for files.</div>
+      </div></div>
+      <div class="card-meta">dropbox.com / drive.google.com · Free tiers sufficient · Set up asset library in Week 3</div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Relationship & Network Management</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards">
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Clay — Personal CRM for Relationship Building</div>
+        <div class="card-body">Track every hospitality relationship, hotel contact, realtor, grooming partner, and influencer conversation in one place. Clay auto-enriches contacts with LinkedIn and social data. Log every touchpoint so nothing gets forgotten and follow-ups happen on time.</div>
+      </div></div>
+      <div class="card-meta">clay.earth · $10/month · Set up from Day 1 of outreach</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Notion — Sponsor & Partner Tracker</div>
+        <div class="card-body">Track all event sponsor conversations, partnership status, and concierge referral arrangements in a shared Notion database. Partner A and B both need visibility on this. Build a simple table: contact, status, what was offered, what was agreed, follow-up date.</div>
+      </div></div>
+      <div class="card-meta">notion.so · Free tier sufficient · Build the sponsor tracker in Week 5</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Calendly — Meeting Scheduling for Partnership Conversations</div>
+        <div class="card-body">Eliminate the back-and-forth when scheduling hotel, realtor, and grooming partner meetings. A Calendly link with 30-minute meeting slots signals professionalism. Set availability to reflect Partner B's actual schedule.</div>
+      </div></div>
+      <div class="card-meta">calendly.com · Free for basic / $10/month for team · Use from Week 4 outreach onwards</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── LOCAL OUTREACH MAP ───────────────────────────────────────────── -->
+<div class="tab-panel" id="tab-local">
+  <h1 class="section-title">Local outreach <em>map</em></h1>
+  <p class="section-sub">Businesses near 140 Nassau St · FiDi microinfluencer targets · owners · operators · realtors · hotels</p>
+
+  <div class="callout accent">
+    <div class="callout-icon">◈</div>
+    <div class="callout-text">
+      <div class="ct-title">The strategy for local outreach</div>
+      <div class="ct-body">These are the businesses within walking distance of Gestalt Atelier. The goal is not press coverage — it is a web of warm referrals among FiDi's business community. Every owner, manager, concierge, and broker within 5 minutes of 140 Nassau St is a potential source of qualified client introductions. Partner B owns every relationship here.</div>
+    </div>
+  </div>
+
+  <!-- Physical map embed -->
+  <div style="border-radius:14px;overflow:hidden;border:1px solid var(--rule);margin-bottom:28px;box-shadow:0 4px 24px rgba(0,0,0,0.07)">
+    <div style="background:var(--deep);padding:12px 18px;display:flex;align-items:center;gap:10px">
+      <span style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--accent)">◈ Gestalt Atelier — Local Outreach Radius</span>
+      <span style="font-family:'DM Mono',monospace;font-size:10px;color:#6a6860;margin-left:auto">140 Nassau St, FiDi, NYC 10038</span>
+    </div>
+    <div id="gestalt-map" style="width:100%;height:480px;border-radius:0;display:block"></div>
+    <div style="background:#f5f3ee;padding:8px 16px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <span>📍 140 Nassau St, FiDi · Click any pin for details · Scroll to zoom</span>
+      <a href="https://www.openstreetmap.org/?mlat=40.7107&mlon=-74.0073#map=16/40.7107/-74.0073" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;font-weight:600">Open in OSM ↗</a>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Luxury Hotels — Concierge Referral Targets</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">The Beekman, A Thompson Hotel — 123 Nassau St</div>
+        <div class="card-body">Literally next door at 123 Nassau St — Gestalt Atelier's single most important hospitality relationship. The Beekman regularly features on lists of the world's best hotels. Its guests are high-spending travelers and local business elites. The concierge team refers guests to nearby experiences daily. A referral card and briefing meeting with the concierge director is the immediate goal.</div>
+      </div></div>
+      <div class="card-meta">thebeekmanny.com · +1 212-233-2300 · 4.5★ · In-person introduction — do not cold call</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Four Seasons Hotel New York Downtown — 27 Barclay St</div>
+        <div class="card-body">Four Seasons' concierge teams operate at the highest level of guest service. A referral arrangement with Four Seasons signals enormous credibility. Their guests are spending $500–$1,500/night — a $2,500 Gestalt Atelier session is within their consideration set. Approach via the hotel's Director of Guest Experience or Guest Relations Manager.</div>
+      </div></div>
+      <div class="card-meta">fourseasons.com/newyorkdowntown · +1 646-880-1999 · 4.7★ · Contact Guest Experience Director</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Casa Cipriani — 10 South End Ave</div>
+        <div class="card-body">Ultra-exclusive private members club and hotel. Membership-based clientele are FiDi's highest-earning professionals and visiting international UHNW individuals. The Cipriani family brand carries enormous social weight. A partnership here — even informal — is a powerful credibility signal. Approach through the Membership or Partnerships team, not the front desk.</div>
+      </div></div>
+      <div class="card-meta">casacipriani.com · @casa_cipriani · UHNW clientele · Partnership / Memberships team only</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Hyatt Centric Wall Street — 75 Wall St</div>
+        <div class="card-body">Business traveler-focused luxury hotel on Wall Street. Corporate guests on extended stays are strong Gestalt Atelier prospects — professionals who need their image sorted while in the city. Less prestigious than Four Seasons but higher volume of the exact professional client type.</div>
+      </div></div>
+      <div class="card-meta">hyatt.com · +1 212-590-1234 · 4.2★ · Approach concierge manager directly</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">AKA Wall Street — 84 William St</div>
+        <div class="card-body">Extended-stay luxury residences for executives relocating to or working in FiDi. Guests stay weeks or months — a longer runway for relationship building and more reason to invest in image. The resident services team is the right contact. These are exactly the people Gestalt Atelier was built for.</div>
+      </div></div>
+      <div class="card-meta">stayaka.com · Extended stay executive residences · Resident Services team</div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Power-Lunch Restaurants — Owner & Management Targets</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Temple Court — 5 Beekman St (inside The Beekman Hotel)</div>
+        <div class="card-body">The Beekman's restaurant — a Tom Colicchio concept in a stunning nine-story atrium. The clientele is hotel guests and FiDi power-lunch crowd. The restaurant manager and GM are strong relationship targets: they see the same high-earning professionals every week. A referral arrangement — "Ask your server about Gestalt Atelier next door" — is the goal.</div>
+      </div></div>
+      <div class="card-meta">4.5★ · 1,400+ reviews · Fine dining · Tom Colicchio · Approach GM directly</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Crown Shy — 70 Pine St (Ground Floor)</div>
+        <div class="card-body">Michelin-starred fine dining in the ground floor of 70 Pine, sharing the building with Saga. The power-lunch and dinner crowd at Crown Shy are exactly Gestalt Atelier's target clients. The chef-owner and GM are influential FiDi community figures — a genuine relationship with them opens other doors.</div>
+      </div></div>
+      <div class="card-meta">4.5★ · 1,800+ reviews · Michelin star · Crown Shy / Saga operate from same building</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Saga — 70 Pine St (63rd Floor)</div>
+        <div class="card-body">Two-Michelin-star restaurant on the 63rd floor of 70 Pine with panoramic Manhattan views. The most aspirational dining room in FiDi — exactly the kind of place Gestalt Atelier's clientele frequents. The experience is chef-driven and reserved for serious diners. A relationship with the owners or host team could yield notable event venue opportunities.</div>
+      </div></div>
+      <div class="card-meta">4.5★ · 511 reviews · 2 Michelin stars · $$$$ · Event venue potential for future</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Manhatta — 28 Liberty St (60th Floor)</div>
+        <div class="card-body">60th floor fine dining with panoramic views. Popular with Wall Street executives for celebratory meals. The management and ownership are well-connected in the FiDi business community. A referral card at the host stand or a relationship with the events manager is a realistic goal.</div>
+      </div></div>
+      <div class="card-meta">4.7★ · 3,800+ reviews · $$$$ · Events manager is the right contact</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Harry's — 1 Hanover Square</div>
+        <div class="card-body">A long-standing Financial District institution for Wall Street professionals. Harry's is where FiDi power deals get closed over lunch. The clientele is old-school finance — exactly the traditional Gestalt client. The owner/operator is a fixture of the FiDi business community and a high-value relationship.</div>
+      </div></div>
+      <div class="card-meta">4.5★ · 1,798 reviews · $$$ · Classic FiDi institution · Owner relationship highly valuable</div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Luxury Realtors — Referral Partnership Targets</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Keller Williams NYC — 90 John St</div>
+        <div class="card-body">Literally around the corner at 90 John St — the most geographically convenient realtor relationship. KW NYC handles residential and commercial real estate across FiDi and Lower Manhattan. A closing gift arrangement — Gestalt Atelier session as a premium welcome for buyers of $2M+ properties — is the pitch. The agents are the targets, not the corporate office.</div>
+      </div></div>
+      <div class="card-meta">90 John St · kw.com/nyc · 4.9★ · Approach individual agents who work FiDi/Tribeca</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Mont Sky Real Estate — 99 Wall St</div>
+        <div class="card-body">Boutique luxury real estate firm at 99 Wall St — one block from 140 Nassau. Specialises in high-end residential sales and rentals across Lower Manhattan. Owner-operated boutique firms are easier to build relationships with than large franchises. The principals at Mont Sky are accessible and community-minded.</div>
+      </div></div>
+      <div class="card-meta">99 Wall St · montsky.com · 4.6★ · Boutique — approach the principals directly</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">The Corcoran Group — SoHo / Tribeca Offices</div>
+        <div class="card-body">Corcoran handles some of the most significant luxury residential transactions in Lower Manhattan, Tribeca, and SoHo. Their agents work with the exact clientele Gestalt Atelier is targeting. A partnership with 2–3 senior Corcoran brokers who specialise in $2M+ Tribeca and FiDi properties is a high-value long-term relationship.</div>
+      </div></div>
+      <div class="card-meta">corcoran.com · Target brokers specialising in Tribeca / FiDi $2M+ transactions</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Sotheby's International Realty — NYC Downtown</div>
+        <div class="card-body">The highest-end residential real estate brand. Sotheby's realtors represent buyers and sellers of the most significant Downtown Manhattan properties. Their clients are the most aligned with Gestalt Atelier's premium positioning. A co-branded referral programme — "Sotheby's recommends Gestalt Atelier" — carries enormous brand credibility.</div>
+      </div></div>
+      <div class="card-meta">sothebysrealty.com · Target the Downtown Manhattan office · Co-branded referral programme pitch</div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Grooming & Barbering — Peer Referral Partners</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Skullfade Barbers — 105 Nassau St</div>
+        <div class="card-body">Literally at 105 Nassau St — the same block as Gestalt Atelier. Rated 4.7★ with 763 reviews, Skullfade is the premium FiDi barbershop for corporate professionals. Their clients are Gestalt Atelier's clients. A mutual referral arrangement is the most natural possible partnership: they send clients to Joseph, Joseph sends clients to them for grooming before a consultation.</div>
+      </div></div>
+      <div class="card-meta">105 Nassau St · +1 212-548-6186 · 4.7★ · Walk in, introduce yourself — same street</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">ADAM Grooming Atelier — Brookfield Place, 225 Liberty St</div>
+        <div class="card-body">A premium men's grooming atelier inside Brookfield Place — the luxury retail complex connected to the World Financial Center. The name "atelier" and the FiDi location make this an almost perfect peer partner. Their clientele is finance and executive. The shared "atelier" positioning is a genuine conversation starter for the partnership pitch.</div>
+      </div></div>
+      <div class="card-meta">225 Liberty St · Brookfield Place · 4.8★ · Fellow "atelier" positioning — natural peer</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Gentleman's Barber Spa NYC — 200 Church St</div>
+        <div class="card-body">Premium barber spa in Tribeca, 10 minutes north of 140 Nassau. Known for serving photographers, professionals, and creative directors. Reviews specifically mention executives coming for "photo shoots" and "professional image" — directly adjacent to Gestalt Atelier's service territory.</div>
+      </div></div>
+      <div class="card-meta">200 Church St · +1 646-490-5008 · 4.8★ · Photo shoot and image-conscious clientele</div>
+    </div>
+    <div class="card B">
+      <div class="card-top"><div>
+        <div class="card-title">Tribeca Gents Barbershop — 157 Chambers St</div>
+        <div class="card-body">5-star boutique barbershop in Tribeca. Manny the Barber has built an exceptionally loyal following among Tribeca and FiDi professionals. One of the few genuinely perfect-rated barbershops in Manhattan. A relationship with Manny is a relationship with the community — he knows everyone.</div>
+      </div></div>
+      <div class="card-meta">157 Chambers St · +1 212-256-0032 · 5.0★ · 202 reviews · Community-connected owner</div>
+    </div>
+  </div>
+
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Independent Coffee Shops — Daily Touchpoint Targets</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card" style="border-left-color:#e67e22">
+      <div class="card-top"><div>
+        <div class="card-title">Variety Coffee Roasters — 140 Nassau St</div>
+        <div class="card-body">In the same building as Gestalt Atelier. The owner-run FiDi staple where the same professionals walk in every morning. This is the single most natural daily relationship — leave referral cards at the counter, become a regular yourself, build a genuine friendship with the owner. 4.4★, Brooklyn-roasted coffee.</div>
+      </div></div>
+      <div class="card-meta">140 Nassau St · Same building · Owner-run · Start here Day 1</div>
+    </div>
+    <div class="card" style="border-left-color:#e67e22">
+      <div class="card-top"><div>
+        <div class="card-title">Simpl Coffee — 59 Nassau St</div>
+        <div class="card-body">4.9★ independent café on the same street. Finance professionals are regulars. The owner is hands-on and community-minded. A referral card on the counter and a genuine relationship with the owner is entirely achievable — they serve the same people Joseph will be dressing.</div>
+      </div></div>
+      <div class="card-meta">59 Nassau St · 4.9★ · 760 reviews · Same street · Owner-operated</div>
+    </div>
+    <div class="card" style="border-left-color:#e67e22">
+      <div class="card-top"><div>
+        <div class="card-title">No Plates Coffee — 12 John St</div>
+        <div class="card-body">4.9★ specialty café one block away. Owner George personally greets regulars and is known for building genuine community. The clientele skews creative professional and design-forward — Gestalt Atelier's secondary audience. George knows his regulars by name and by occupation.</div>
+      </div></div>
+      <div class="card-meta">12 John St · 4.9★ · 455 reviews · Ask for George · Community-builder owner</div>
+    </div>
+    <div class="card" style="border-left-color:#e67e22">
+      <div class="card-top"><div>
+        <div class="card-title">Suited NYC — 45 John St</div>
+        <div class="card-body">The name alone tells you everything. A specialty coffee shop whose clientele is literally the suited FiDi professional. 4.6★, well-reviewed for quality and service. This is Gestalt Atelier's client getting coffee before work. A referral card here is as targeted as it gets.</div>
+      </div></div>
+      <div class="card-meta">45 John St · 4.6★ · Clientele is literally the suited FiDi professional</div>
+    </div>
+    <div class="card" style="border-left-color:#e67e22">
+      <div class="card-top"><div>
+        <div class="card-title">MCM Coffee — 88 Fulton St</div>
+        <div class="card-body">4.8★ tiny independent gem at Fulton St. Owner-operated with intensely loyal regulars. Reviews describe it as a "second home" — exactly the kind of community hub where a referral card from a neighbouring business carries real weight.</div>
+      </div></div>
+      <div class="card-meta">88 Fulton St · 4.8★ · Owner-operated · Community hub feel</div>
+    </div>
+    <div class="card" style="border-left-color:#e67e22">
+      <div class="card-top"><div>
+        <div class="card-title">REGULAR NYC — 19 Rector St</div>
+        <div class="card-body">4.9★ independent café near Rector St. A neighbourhood staple for nearby residents and office workers. The owner-run character and consistent quality have built a loyal following. Slightly further from Nassau but within the FiDi professional radius.</div>
+      </div></div>
+      <div class="card-meta">19 Rector St · 4.9★ · Independent · Neighbourhood staple</div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Independent Retailers & Boutiques — Foot Traffic Partners</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card" style="border-left-color:#2980b9">
+      <div class="card-top"><div>
+        <div class="card-title">Nassau St Independent Retail Strip</div>
+        <div class="card-body">Nassau St between Fulton and Beekman is lined with small independent retailers — clothing, gifts, accessories, and specialty shops. The owners on this strip see the same high-volume FiDi foot traffic every weekday. Walk the full block, introduce yourself to every owner-operated shop, and leave a referral card. A network of five or six neighbouring retailers who mention Gestalt Atelier is a powerful local word-of-mouth engine.</div>
+      </div></div>
+      <div class="card-meta">Nassau St · Walk the block · Introduce yourself to every owner-operated shop</div>
+    </div>
+    <div class="card" style="border-left-color:#2980b9">
+      <div class="card-top"><div>
+        <div class="card-title">Independent Office Buildings — FiDi Landlords & Building Managers</div>
+        <div class="card-body">The office buildings surrounding 140 Nassau house thousands of finance, law, and professional services employees. Building managers and landlords are overlooked relationship targets — a referral arrangement ("we partner with the businesses in this building") or a welcome packet for new tenants positions Gestalt Atelier as a building amenity. Target the management offices of 120–150 Nassau, 99 Nassau, 84 William, and 70 Pine specifically.</div>
+      </div></div>
+      <div class="card-meta">120–150 Nassau · 99 Nassau · 84 William · 70 Pine · Building management offices</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-icon">◈</div>
+    <div class="callout-text">
+      <div class="ct-title">How to approach every business on this list</div>
+      <div class="ct-body">Walk in. Introduce yourself. Have one of Joseph's business cards (Moo, Luxe finish) with you. Lead with: "We're opening Gestalt Atelier at 140 Nassau in September — a luxury image consultancy. We think we serve the same clients you do and we'd love to explore a referral arrangement." Do not send a cold email to any of these — a physical introduction on their premises builds trust that no email can replicate. Partner B owns every relationship here.</div>
+    </div>
+  </div>
+</div>
+
 </main>
 
 <script>
@@ -1249,7 +1866,391 @@ function switchTab(id, btn) {
   document.getElementById('tab-' + id).classList.add('active');
   btn.classList.add('active');
   window.scrollTo({top: 0, behavior: 'smooth'});
+  if (id === 'contacts') setTimeout(renderContacts, 50);
 }
+</script>
+
+<script>
+const CONTACTS = [
+  {id:1,tier:1,name:"Permanent Style",type:"newsletter",writer:"Simon Crompton",handle:"@permanentstylelondon",email:"simon@permanentstyle.com",cat:"Menswear & Tailoring",url:"permanentstyle.com",
+   angle:"The architecture angle is your in. Simon has written extensively on Florentine and Savile Row tailoring as structural disciplines. Joseph fits this tradition perfectly — pitch the GESTALT method as a system, not a service.",
+   tone:"Scholarly and peer-to-peer. Write to Simon as an equal who has developed a coherent methodology. Reference specific tailoring philosophy. Avoid 'luxury' and 'exclusive' — use 'quality' and 'craft.'",
+   steps:["Email simon@permanentstyle.com directly — no PR intermediary","Subject: 'A new image consultancy in NYC built around the architecture of dress'","Open by referencing a specific Permanent Style piece you found resonant — be genuine, not flattering","One paragraph on Joseph's philosophy: tailoring as structural thinking, the GESTALT method","Offer a Q&A interview or a short guest piece on a tailoring topic of Simon's choosing","Attach the media kit as PDF — not inline"]},
+  {id:2,tier:1,name:"Die, Workwear!",type:"newsletter",writer:"Derek Guy",handle:"@die_workwear",email:"Contact via dieworkwear.com",cat:"Menswear & Tailoring",url:"dieworkwear.com",
+   angle:"Derek covers the mechanics of fit and tailoring with academic rigour. The GESTALT method — particularly the structural/architectural framing — is precisely his subject matter.",
+   tone:"Intellectual and direct. Derek is sceptical of marketing language. Write plainly, cite specific points of view, avoid press-release phrasing entirely. Be specific about his work if you reference it.",
+   steps:["Find contact via dieworkwear.com or Substack DM","Subject: 'Image consulting as tailoring philosophy — a conversation'","Lead with a specific question or provocation about how fit communicates authority","Mention Joseph's background and the architecture/tailoring connection","Ask if he would be open to a short interview or feature","No attachment on first contact — follow up with media kit only if he responds"]},
+  {id:3,tier:1,name:"The Rake Daily",type:"newsletter",writer:"Wei Koh",handle:"@wei_koh_revolution",email:"Contact via therake.com",cat:"Menswear & Tailoring",url:"therake.com",
+   angle:"The Rake's audience is Gestalt Atelier's exact client. Wei Koh writes for ultra-high-net-worth men who buy bespoke and collect watches. The FiDi location is directly relevant.",
+   tone:"Elevated and editorial. The Rake's voice is confident and unironic about luxury. Match that energy. Reference heritage and craft. Avoid 'personal branding' — frame around elegance and precision.",
+   steps:["Contact via therake.com editorial or Instagram DM to Wei Koh","Subject: 'A new image atelier in the Financial District — built around architectural tailoring'","Lead with the physical space and Joseph's background before any service description","Offer an editorial visit to the atelier before opening — exclusive preview angle","Propose a feature: 'The Architect of Presence opens in FiDi'","Offer to arrange an in-person meeting with Joseph"]},
+  {id:4,tier:1,name:"He Spoke Style Daily",type:"newsletter",writer:"Brian Sacawa",handle:"@brian_sacawa",email:"Contact via hespokestyle.com",cat:"Menswear & Tailoring",url:"hespokestyle.com",
+   angle:"Brian's audience is Gestalt's exact client — corporate professionals investing in appearance. The Business Insider credential is your credibility hook. Pitch the service as a natural next step for his reader.",
+   tone:"Warm and actionable. Brian's voice is approachable and practical. Don't be overly literary — be direct about what the consultation does and why it matters for a Wall Street professional.",
+   steps:["Contact via hespokestyle.com or Brian's Instagram","Subject: 'A new luxury image consultancy in NYC for the corporate professional'","Lead with the Business Insider credential — it speaks his reader's language","Explain the GESTALT method briefly, each pillar as a professional tool","Offer Brian a complimentary consultation for review purposes","Request a feature or sponsored newsletter mention for the opening"]},
+  {id:5,tier:1,name:"Business Insider",type:"social",writer:"Existing contact",handle:"[Existing relationship]",email:"Contact writer who quoted Joseph previously",cat:"NY Culture & Events",url:"businessinsider.com",
+   angle:"Joseph has already been quoted in Business Insider. This is a warm follow-up, not a cold pitch. Convert the existing quote into a longer feature and explore the launch event co-partnership.",
+   tone:"Business-first, results-oriented. BI readers want to know what this means professionally. Lead with outcomes — how image affects earnings and promotion. The event co-partnership angle makes this mutually beneficial.",
+   steps:["Contact the specific writer or editor who quoted Joseph previously — this is warm outreach","Subject: 'Following up on [article title] — Gestalt Atelier opens in FiDi this September'","Reference the previous quote explicitly in the first sentence","Pitch two things: a feature story AND the launch event co-partnership opportunity","Offer Joseph as an ongoing expert source on professional image and executive presence","This is your highest-probability press placement — prioritise it above all others"]},
+  {id:6,tier:1,name:"FT How To Spend It",type:"newsletter",writer:"Jo Ellison",handle:"@financialtimes_fashion",email:"Contact via ft.com/htsi",cat:"Culture, Design & NY",url:"ft.com/htsi",
+   angle:"HTSI covers the intersection of money, taste, and culture. Gestalt Atelier's premise — style as infrastructure for the ultra-successful — is an HTSI story. The FiDi location and $2,500 sessions signal the right price tier.",
+   tone:"Sophisticated and culturally literate. HTSI readers expect references to architecture, art, and global culture. Frame Joseph's philosophy intellectually. Never use the word 'makeover.'",
+   steps:["Contact via ft.com editorial desk or LinkedIn — Jo Ellison directly if possible","Subject: 'A luxury image consultancy in Manhattan's Financial District: where tailoring meets architecture'","Open with Joseph's philosophy before any service description","Reference the GESTALT system as a designed methodology — not a menu of services","Offer an exclusive pre-opening preview or interview","Include high-resolution images from the brand shoot"]},
+  {id:7,tier:1,name:"WSJ. Magazine",type:"newsletter",writer:"Editorial Team",handle:"@wsjmag",email:"Contact via wsj.com/magazine",cat:"Culture, Design & NY",url:"wsj.com/magazine",
+   angle:"WSJ Magazine's reader is a FiDi executive — the perfect Gestalt client. A feature framed as a business story: professionals investing in image as a competitive career asset.",
+   tone:"Authoritative and business-sophisticated. WSJ readers are high earners who respect expertise. Lead with the business case for image investment. Joseph's philosophy should sound like strategy, not style.",
+   steps:["Contact via WSJ.com editorial or LinkedIn — target the style or culture editor","Subject: 'Feature opportunity: A new image consultancy for NYC's financial district'","Lead with the business angle and the $2,500 session as a market positioning signal","Offer Joseph for an in-depth interview and the atelier for a shoot","The Business Insider credential is your credibility opener","Attach media kit and 3 images — this outlet expects full materials upfront"]},
+  {id:8,tier:1,name:"Robb Report",type:"social",writer:"Editorial Team",handle:"[Check bio]",email:"Contact via robbreport.com",cat:"NY Culture & Events",url:"robbreport.com",
+   angle:"Robb Report covers the finest things for the wealthiest readers. Gestalt Atelier's price point and positioning sit comfortably in their editorial lane. The 'new opening' story with a strong founder narrative is exactly their format.",
+   tone:"Aspirational and precise about quality. Robb Report readers expect specificity — not 'luxury' but 'hand-stitched,' not 'exclusive' but 'by appointment only.' Every detail should signal Joseph's work is at the top of its category.",
+   steps:["Contact via robbreport.com editorial submissions","Subject: 'New Opening: Gestalt Atelier — A Luxury Image Consultancy in NYC's Financial District'","Lead with the physical space and the by-appointment nature of the service","Frame Joseph's background through the architecture and grooming lenses","Offer an exclusive feature opportunity tied to the September opening","Provide complete media kit, high-res images, and Joseph's bio"]},
+  {id:9,tier:1,name:"Monocle / The Urbanist",type:"newsletter",writer:"Tyler Brûlé",handle:"[Check bio]",email:"Contact via monocle.com",cat:"Culture, Design & NY",url:"monocle.com",
+   angle:"Monocle covers cities, design, and businesses worth knowing. A new image atelier in FiDi with a distinct methodology and architectural philosophy is precisely the kind of opening Tyler Brûlé champions.",
+   tone:"Global, confident, quietly passionate about quality. Monocle's voice is never breathless. Write with restrained enthusiasm and geographic specificity — readers want to know exactly where and why.",
+   steps:["Contact via monocle.com editorial or Tyler Brûlé's team","Subject: 'New opening in Manhattan's Financial District — an image consultancy built around architecture'","Lead with the location and the physical concept of the atelier space","Reference Joseph's philosophy briefly — the architecture/tailoring connection","Offer a preview shoot in the space for Monocle's visual team","Ask if the FiDi opening could be considered for their city guides or retail section"]},
+  {id:10,tier:1,name:"Casa Cipriani",type:"social",writer:"Partnerships",handle:"@casa_cipriani",email:"Contact via casacipriani.com partnerships",cat:"NY Culture & Events",url:"casacipriani.com",
+   angle:"Casa Cipriani's membership base is Gestalt Atelier's exact client. A concierge referral partnership is the goal — not press coverage. Position as a complementary luxury service for their members.",
+   tone:"Partner-to-partner, not press-pitch. This is a business development conversation. Lead with what Gestalt Atelier offers their members: discretion, proximity, results. No advertising language.",
+   steps:["Contact via casacipriani.com partnerships or in-person introduction — B leads this","Subject: 'A complementary service for Casa Cipriani members — Gestalt Atelier'","Open by acknowledging the shared clientele and FiDi geography","Propose a simple arrangement: Cipriani staff refer members, Gestalt reciprocates","Offer a complimentary preview session for the concierge team to experience the service","Follow up in person — this relationship is built face to face, not via email alone"]},
+  {id:11,tier:1,name:"New Yorker Culture",type:"newsletter",writer:"Editorial Team",handle:"@newyorkermag",email:"Contact via newyorker.com submissions",cat:"Culture, Design & NY",url:"newyorker.com",
+   angle:"The 'image as architecture' essay angle — framed as a cultural phenomenon about how FiDi professionals present themselves — could work as a Talk of the Town or longer feature.",
+   tone:"Intellectual and unhurried. Pitch a story idea, not a product. Joseph should be a character in a broader cultural observation about image and power in NYC.",
+   steps:["Contact via newyorker.com story submissions or find a specific writer contact","Subject: 'Story idea: the new image consultancy serving Manhattan's power class'","Pitch as a story about a cultural moment — the return of investment in personal presentation","Position Joseph as a fascinating subject, not a client to promote","Offer an on-record interview with Joseph — no PR conditions","High-value, long-shot: pitch once, do not follow up more than once"]},
+  {id:12,tier:2,name:"GQ Magazine",type:"social",writer:"Editorial Team",handle:"@gq",email:"Contact via gq.com masthead",cat:"NY Culture & Events",url:"gq.com",
+   angle:"GQ covers modern menswear authority. The opening of a luxury image consultancy in NYC with a distinct methodology is a standard GQ story. Pitch to the style desk specifically.",
+   tone:"Direct and confident. GQ's voice is authoritative about style. Lead with Joseph as a character — his philosophy and the space — before the service. Avoid PR language. The pitch should read like a tip from a well-connected source.",
+   steps:["Find the style editor contact via GQ.com masthead or LinkedIn","Subject: 'New luxury image consultancy opens in FiDi — founder profile opportunity'","Lead with the most interesting fact: $2,500 sessions, FiDi, by appointment","Offer Joseph for a profile or Q&A around the September opening","Include 2 images from the brand shoot — no media kit attached to first email","Follow up once after 7 days if no response"]},
+  {id:13,tier:2,name:"Esquire",type:"social",writer:"Editorial Team",handle:"[Check bio]",email:"Contact via esquire.com",cat:"Fashion & Menswear",url:"esquire.com",
+   angle:"Joseph's philosophy — image as professional power tool — is an Esquire topic. The architecture angle adds intellectual credibility that differentiates from typical style coverage.",
+   tone:"Modern and intelligent. Lead with ideas, not announcements. The pitch should pose a question that the reader finds compelling.",
+   steps:["Contact via Esquire.com style department","Subject: 'What if your wardrobe was designed the way a building is? A new FiDi consultancy thinks so.'","Lead with the intellectual provocation — style as structural thinking","Position Joseph as the thinker behind the concept before describing the service","Offer a feature or profile of Joseph around the opening","One high-res image and brief bio in the initial email"]},
+  {id:14,tier:2,name:"Vogue Business",type:"social",writer:"Editorial Team",handle:"[Check bio]",email:"Contact via voguebusiness.com",cat:"Fashion & Menswear",url:"voguebusiness.com",
+   angle:"Vogue Business covers the business of fashion and image. The 'image consulting as a professional service category' angle — rather than a fashion story — suits their editorial frame.",
+   tone:"Industry-insider and commercially aware. Frame Gestalt Atelier as a growing service category, with Joseph as the leading NYC practitioner.",
+   steps:["Contact via voguebusiness.com editorial or LinkedIn","Subject: 'The growing market for luxury image consulting in NYC — a new entrant in FiDi'","Lead with the market trend: professionals investing in image as career infrastructure","Position Joseph as the case study for this trend","BI coverage is your credibility anchor","Offer an interview with Joseph around the opening"]},
+  {id:15,tier:2,name:"Blackbird Spyplane",type:"newsletter",writer:"Jonah Weiner",handle:"@blackbirdspyplane",email:"Contact via Substack DM",cat:"Menswear & Tailoring",url:"blackbirdspyplane.substack.com",
+   angle:"The cult newsletter for the creative elite. Joseph's intersection of architecture, grooming, and image philosophy is exactly the kind of deep, original thinker Jonah Weiner covers.",
+   tone:"Counter-cultural and specific. Blackbird Spyplane hates anything that smells like PR. The pitch must feel like a genuine tip, not a press release. Write as yourself, not as a PR representative.",
+   steps:["DM via Substack or Instagram — never a formal press release","Message: 'Not sure if this is your world, but there's an image consultant opening in FiDi who thinks about suiting the way an architect thinks about load-bearing walls — Joseph [Last Name]. Worth a look.'","If he responds with interest, send the media kit","Do not follow up — either it resonates or it doesn't","This only works if it feels completely organic"]},
+  {id:16,tier:2,name:"The Armoury Dispatch",type:"newsletter",writer:"Mark Cho",handle:"@markcho",email:"Contact via thearmoury.com",cat:"Menswear & Tailoring",url:"thearmoury.com",
+   angle:"Mark Cho's audience collects watches and bespoke suits. Gestalt Atelier's positioning as a consultancy that thinks about image with watchmaker-level rigour is a natural parallel.",
+   tone:"Quiet and knowledgeable. Write peer-to-peer: brief, specific, no hyperbole. Reference one specific tailoring or menswear connection that shows you understand his world.",
+   steps:["Email via thearmoury.com or Instagram DM to Mark Cho","Subject: 'A new image atelier in FiDi — thought you might find it interesting'","Write peer-to-peer: brief, specific, no hyperbole","Reference one specific tailoring or menswear connection that shows you understand his world","Offer a preview visit or introduction to Joseph before the opening","No formal media kit on first contact — this is a relationship, not a pitch"]},
+  {id:17,tier:2,name:"Johannes Huebl",type:"social",writer:"Johannes Huebl",handle:"@johanneshuebl",email:"Contact via Instagram bio",cat:"Personalities & Stylists",url:"instagram.com/johanneshuebl",
+   angle:"Johannes Huebl embodies the Gestalt positioning — classic NY tailoring, high society, polished without being flashy. A collaboration or mention would reach exactly the right audience.",
+   tone:"Social and collegial. Johannes is used to PR pitches but responds to genuine peer recognition. Acknowledge his aesthetic before proposing anything. The ask should feel like a collaboration, not an endorsement deal.",
+   steps:["DM via Instagram — do not email formally on first contact","Acknowledge his work genuinely, introduce Joseph's philosophy briefly","Offer a complimentary consultation experience at the atelier before opening","Propose a collaborative post or story: 'A morning at Gestalt Atelier'","Follow up once via DM after 5–7 days if no response","Partner B manages the logistics of the visit if agreed"]},
+  {id:18,tier:2,name:"Nick Wooster",type:"social",writer:"Nick Wooster",handle:"@nickwooster",email:"Contact via Instagram bio",cat:"Personalities & Stylists",url:"instagram.com/nickwooster",
+   angle:"Nick Wooster is a recognised menswear authority in NYC. His avant-garde tailoring aesthetic aligns with Gestalt. A visit or mention signals cultural authority to the creative professional audience.",
+   tone:"Direct and fashion-literate. Nick knows everyone and has seen every pitch. Be brief, be specific, be genuine. Lead with Joseph's philosophy, not the service offering.",
+   steps:["DM via Instagram — brief and direct","Introduce Joseph's concept in one line: 'opening an image atelier in FiDi around the architecture of dress'","Offer a preview visit, no strings attached","Do not mention fees, reach, or commercial arrangements in first contact","If interested, follow with a formal proposal via email"]},
+  {id:19,tier:2,name:"Diego Leon (@dandyinthebronx)",type:"social",writer:"Diego Leon",handle:"@dandyinthebronx",email:"Contact via Instagram bio",cat:"Personalities & Stylists",url:"instagram.com/dandyinthebronx",
+   angle:"Diego is NYC-based, menswear-focused, and community-connected. His audience of NY socialites and creatives overlaps with Gestalt's secondary target. An event invitation is the primary goal.",
+   tone:"Community-first and genuine. The pitch should feel like a personal invitation, not a PR outreach. Reference his NYC connection and the cultural clubhouse vision for the atelier.",
+   steps:["DM via Instagram — personal and warm","Reference the FiDi location and the cultural clubhouse vision","Invite Diego personally to 'The Art of Presence' launch event","Mention that you'd value his perspective as a NYC menswear voice","Do not ask for a post or story — let the event earn organic content","Follow up with a formal event invitation once confirmed"]},
+  {id:20,tier:2,name:"Amy Julliette Lefévre",type:"social",writer:"Amy Julliette Lefévre",handle:"@lefevrediary",email:"Contact via Instagram bio",cat:"Personalities & Stylists",url:"instagram.com/lefevrediary",
+   angle:"Amy covers sophisticated corporate dressing for a high-income professional audience — exactly Gestalt's clientele. A women's angle on the launch event would make her a natural collaborator.",
+   tone:"Polished and professional. Acknowledge her specific focus on corporate dressing and frame Joseph's service as complementary to her perspective.",
+   steps:["DM via Instagram","Reference the gender-inclusive launch event module on professional accessories","Offer an invitation to 'The Art of Presence' event","Propose a collaborative post: 'The case for professional image investment in 2026'","If she engages, Partner A drafts the collaboration brief"]},
+  {id:21,tier:2,name:"Mode Office",type:"newsletter",writer:"Editorial Team",handle:"[Check bio]",email:"Contact via modeoffice.substack.com",cat:"Retail Market & Shop",url:"modeoffice.substack.com",
+   angle:"Mode Office speaks directly to finance and law professionals about executive style. Gestalt Atelier's service is exactly what their reader needs and would pay for. The most direct audience match in the newsletter list.",
+   tone:"Executive and practical. Mode Office readers are busy. Lead with the outcome — what they walk away with after a Gestalt session. Keep it short, specific, ROI-framed.",
+   steps:["Contact via modeoffice.substack.com or Substack DM","Subject: 'A luxury image consultancy opening in FiDi — built for finance and law professionals'","Two paragraphs maximum: what it is, who it's for, how to book","Mention the $2,500 session as a signal of professional-grade commitment","Offer a sponsored newsletter mention or editorial feature","Provide a direct booking link or inquiry process"]},
+  {id:22,tier:2,name:"The Gilded Hour",type:"newsletter",writer:"Editorial Team",handle:"@thegildedhour",email:"Contact via gildedhour.substack.com",cat:"Culture, Design & NY",url:"gildedhour.substack.com",
+   angle:"The Gilded Hour covers private clubs and exclusive events for FiDi socialites. 'The Art of Presence' launch event is exactly what they cover.",
+   tone:"Socially aware and insider-coded. Lead with the event concept and exclusivity. Frame the launch as a social event worth being at, not a product launch.",
+   steps:["Contact via gildedhour.substack.com","Subject: 'Invitation: The Art of Presence — a private pre-opening event by Gestalt Atelier'","Lead with the event concept and the curated guest list","Describe the masterclass format briefly — etiquette, tailoring, architecture","Include the date and location once confirmed","Offer to add their editorial team to the guest list"]},
+  {id:23,tier:2,name:"Sprezza",type:"newsletter",writer:"Mitch Ganz",handle:"[Check bio]",email:"Contact via sprezza.substack.com",cat:"Menswear & Tailoring",url:"sprezza.substack.com",
+   angle:"Sprezza covers suiting, interior design, and bars — the lifestyle of the young corporate exec. Gestalt Atelier's FiDi positioning and the 'cultural clubhouse' vision aligns perfectly.",
+   tone:"Cool and specific. Lead with the concept of the atelier as a space — the cultural clubhouse vision. Frame Gestalt as a discovery for the discerning professional.",
+   steps:["Contact via sprezza.substack.com or Substack DM","Subject: 'A new image atelier in FiDi — the kind of place Sprezza readers should know about'","Lead with the space and the cultural clubhouse concept","Include one image and a brief description of the GESTALT method","Offer a featured piece or newsletter mention tied to the opening","Offer Mitch a complimentary consultation for review purposes"]},
+  {id:24,tier:2,name:"Downtown NY Alert",type:"newsletter",writer:"Lower Manhattan Co.",handle:"[Check bio]",email:"Contact via downtownny.com",cat:"Culture, Design & NY",url:"downtownny.com",
+   angle:"Downtown NY Alert covers FiDi and Lower Manhattan openings for local residents. A new opening in the neighbourhood is exactly their brief. High geographic relevance.",
+   tone:"Local and practical. Lead with the neighbourhood: 'A new luxury image consultancy is opening in the Financial District this September.' Give the address and concept concisely.",
+   steps:["Contact via downtownny.com or the Lower Manhattan Cultural Council","Subject: 'New Business Opening: Gestalt Atelier — FiDi Luxury Image Consultancy, September 2026'","Lead with the address and opening date — this is news, not a feature pitch","Brief description of the service and founder in plain language","Offer to provide a quote from Joseph for the piece","Follow up 3 weeks before opening with opening announcement details"]},
+  {id:25,tier:2,name:"Private Club Dossier",type:"newsletter",writer:"Editorial Team",handle:"[Check bio]",email:"Contact via privateclubdossier.substack.com",cat:"Culture, Design & NY",url:"privateclubdossier.substack.com",
+   angle:"Private Club Dossier covers the members-only world — exactly where Gestalt is positioning. The 'private-members-club-adjacent cultural space' vision is the lead angle.",
+   tone:"Exclusive and insider. Lead with the by-appointment, curated-clientele, private nature of the experience. The pitch itself should feel like something not everyone gets.",
+   steps:["Contact via privateclubdossier.substack.com","Subject: 'A new private image atelier in FiDi — by appointment only'","Lead with the exclusive, by-appointment nature of the consultancy","Frame the atelier as a cultural space for the professional elite","Offer an invitation to experience the space before it opens publicly","Include the $2,500 session detail as a qualifier"]},
+  {id:26,tier:2,name:"The Wm Brown Weekly",type:"newsletter",writer:"Matt Hranek",handle:"[Check bio]",email:"Contact via wmbrownweekly.substack.com",cat:"Menswear & Tailoring",url:"wmbrownweekly.substack.com",
+   angle:"Matt Hranek covers the good life for ultra-HNW bon vivants — cocktails, watches, tailoring, and the art of living well. The cultural clubhouse vision fits his world exactly.",
+   tone:"Personal and convivial. Write like a well-read friend telling you about something worth knowing. Lead with the cocktails-and-tailoring world of Gestalt.",
+   steps:["Contact via wmbrownweekly.substack.com or Substack DM","Subject: 'Something worth knowing about in FiDi this September'","Write in a conversational tone — one friend to another","Lead with the cultural clubhouse concept and the architect-of-presence idea","Offer a visit and introduction to Joseph before opening","Propose a feature: 'The image atelier that thinks like an architect'"]},
+  {id:27,tier:2,name:"Magasin",type:"newsletter",writer:"Laura Reilly",handle:"[Check bio]",email:"Contact via magasin.substack.com",cat:"Retail Market & Shop",url:"magasin.substack.com",
+   angle:"Laura Reilly covers retail openings for NYC's most discerning shoppers. A new image atelier in FiDi with a designed methodology is her beat.",
+   tone:"Confident and retail-literate. Laura knows every opening and is hard to impress. Lead with what's genuinely different: the methodology, the by-appointment model. One specific, unexpected detail will do more than a full media kit.",
+   steps:["Contact via magasin.substack.com or Substack DM","Subject: 'New opening in FiDi — an image atelier that thinks differently'","One paragraph: what it is, what makes it different, when it opens","Lead with the most distinctive detail: the GESTALT method as a designed system","Offer a preview visit before the public opening","If she responds with interest, send the full media kit"]},
+  {id:28,tier:2,name:"Lilly Sisto",type:"social",writer:"Lilly Sisto",handle:"@lillysisto",email:"Contact via Instagram bio",cat:"Personalities & Stylists",url:"instagram.com/lillysisto",
+   angle:"Lilly covers NYC fashion PR and polished style. An invite to the launch event and a potential story from an insider NYC perspective could generate organic social coverage.",
+   tone:"Professional and NYC-insider. Lilly understands PR but respects genuine quality. Lead with the event invitation, not the product pitch.",
+   steps:["DM via Instagram","Invite personally to 'The Art of Presence' launch event","Brief intro to Joseph and the concept","No commercial ask on first contact — let the event do the work","Follow up with formal event invitation when details are confirmed"]},
+  {id:29,tier:2,name:"The Contender",type:"newsletter",writer:"David Coggins",handle:"[Check bio]",email:"Contact via thecontender.substack.com",cat:"Menswear & Tailoring",url:"thecontender.substack.com",
+   angle:"David Coggins covers bespoke travel, fishing, and suits for affluent traditionalists — the old-money subset of Gestalt's target.",
+   tone:"Literary and dry. David writes with wit and erudition. Lead with the craft and the philosophy. He will appreciate brevity and specificity — a long pitch is a bad pitch.",
+   steps:["Contact via thecontender.substack.com","One short paragraph: what Gestalt Atelier is, what makes it distinctive, when it opens","Reference the tailoring/architecture philosophy briefly","Offer Joseph for a short Q&A if interested","Do not send a formal media kit on first contact"]},
+  {id:30,tier:2,name:"Opulent Minimalist",type:"newsletter",writer:"Editorial Team",handle:"[Check bio]",email:"Contact via opulentminimal.substack.com",cat:"Retail Market & Shop",url:"opulentminimal.substack.com",
+   angle:"Covers anti-consumerist luxury for the ultra-wealthy. Gestalt's anti-trend, timeless sophistication positioning is precisely their editorial lane.",
+   tone:"Restrained and knowing. This audience dislikes anything that feels like a pitch. Lead with what Gestalt is NOT as much as what it is. Write with restraint.",
+   steps:["Contact via opulentminimal.substack.com","Subject: 'Not a styling service. An image consultancy.'","Lead with the anti-trend positioning and the 'luxury without performance' philosophy","One paragraph — the shortest credible pitch wins here","If interested, offer a full briefing call with Partner A"]},
+  {id:31,tier:3,name:"Wellness Executive",type:"newsletter",writer:"Editorial Team",handle:"[Check bio]",email:"Contact via wellnessexec.substack.com",cat:"Grooming & Wellness",url:"wellnessexec.substack.com",
+   angle:"Executive wellbeing for C-Suite professionals in FiDi. Image confidence is a legitimate executive wellness topic. Pitch the psychological dimension: confidence engineering, executive presence, social signalling.",
+   tone:"Evidence-based and executive-practical. Lead with: how does image affect executive performance? Answer with Gestalt's methodology.",
+   steps:["Contact via wellnessexec.substack.com","Subject: 'Executive presence as wellness: a new image consultancy in FiDi'","Lead with the psychological and professional angle","Brief mention of the GESTALT methodology as a structured approach","Offer Joseph for an expert interview on executive image and performance","Propose a feature: 'The case for investing in your professional image'"]},
+  {id:32,tier:3,name:"Architectural Digest (social)",type:"social",writer:"Editorial Team",handle:"@archdigest",email:"Contact via architecturaldigest.com",cat:"NY Culture & Events",url:"architecturaldigest.com",
+   angle:"Coordinate with editorial pitch. AD's social account reaches a massive audience. The atelier space photography needs to be exceptional for AD social standards.",
+   tone:"Visual-first. AD social is led by images. One exceptional architectural interior image is worth more than any written pitch.",
+   steps:["Coordinate with editorial pitch — do not pitch separately","Ensure brand shoot includes wide-angle atelier interior shots","Request social tagging when feature is confirmed","Offer exclusive images in the AD format: bright, architectural, aspirational"]},
+  {id:33,tier:3,name:"Dezeen",type:"social",writer:"Editorial Team",handle:"@dezeen",email:"Contact via dezeen.com",cat:"NY Culture & Events",url:"dezeen.com",
+   angle:"Dezeen covers architecture and design spaces globally. If the atelier interior has genuine architectural merit this is a viable pitch. Requires exceptional space photography.",
+   tone:"Design-professional and precise. Lead with the spatial design and the architectural philosophy. The fashion aspect is secondary to the space and the concept.",
+   steps:["Contact via dezeen.com editorial","Subject: 'New architectural interior opening in NYC's Financial District'","Lead with the space — physical description and architectural approach","Requires completed and photographed atelier interior — do not pitch until space is ready","Include renders or concept images if available before opening"]},
+  {id:34,tier:3,name:"Surface Magazine",type:"social",writer:"Editorial Team",handle:"@surfacemag",email:"Contact via surfacemag.com",cat:"NY Culture & Events",url:"surfacemag.com",
+   angle:"Surface covers design and luxury architecture. The atelier space and architecture-of-dress philosophy creates a natural editorial angle.",
+   tone:"Design-confident and spatially aware. Lead with the physical concept of the atelier and the methodology as a designed system.",
+   steps:["Contact via surfacemag.com","Subject: 'A new atelier space in FiDi built around the architecture of dress'","Lead with the spatial concept and design philosophy","Offer a feature tied to the atelier interior design and opening","Requires completed space photography"]},
+  {id:35,tier:3,name:"Cultured Magazine",type:"social",writer:"Editorial Team",handle:"@cultured_mag",email:"Contact via culturedmag.com",cat:"NY Culture & Events",url:"culturedmag.com",
+   angle:"Cultured sits at the intersection of fine art, fashion, and architecture — exactly Gestalt's cultural territory. The visual identity needs to be strong enough for Cultured's aesthetic standards.",
+   tone:"Art-world cool and intellectually confident. Frame Gestalt as a cultural space and Joseph as a cultural figure — not as a service provider.",
+   steps:["Contact via culturedmag.com editorial or Instagram","Subject: 'A new cultural space in FiDi — image consultancy meets architectural thinking'","Lead with the cultural space concept — the atelier as a gathering point","Frame Joseph as a cultural figure in the tradition of the architect-dandy","Offer a portrait shoot opportunity for their photography section"]},
+  {id:36,tier:3,name:"The Sartorialist",type:"newsletter",writer:"Scott Schuman",handle:"[Check bio]",email:"Contact via thesartorialist.com",cat:"Menswear & Tailoring",url:"thesartorialist.substack.com",
+   angle:"Scott Schuman's street photography elevates the well-dressed individual. Joseph and the Gestalt clientele are exactly his visual subject matter.",
+   tone:"Simple and visual. Scott responds to beautiful things. A pitch to Scott should be almost non-verbal — a few lines and a strong image.",
+   steps:["Contact via thesartorialist.com or Instagram","Subject: 'Portrait opportunity — a new image atelier in Manhattan'","Two sentences maximum: who Joseph is and what the atelier is","Include one exceptional image from the brand shoot","Offer a portrait session with Joseph in the atelier","Do not follow up more than once"]},
+  {id:37,tier:3,name:"Blackbird Spyplane (social)",type:"social",writer:"Jonah Weiner",handle:"@blackbirdspyplane",email:"Contact via Instagram DM",cat:"Menswear & Tailoring",url:"instagram.com/blackbirdspyplane",
+   angle:"Coordinate with newsletter outreach. Social follow-through if the newsletter relationship is established.",
+   tone:"Same as newsletter — organic and un-PR'd.",
+   steps:["Only approach social after newsletter contact — not simultaneously","If newsletter resonates, social follows naturally","Do not pitch both at the same time"]},
+  {id:38,tier:3,name:"GQ (social)",type:"social",writer:"Editorial Team",handle:"@gq",email:"Coordinate with editorial pitch",cat:"NY Culture & Events",url:"gq.com",
+   angle:"Coordinate with editorial pitch. Social tagging follows a feature. Prioritise the editorial relationship.",
+   tone:"Same as editorial — direct and confident.",
+   steps:["Coordinate with editorial outreach — do not pitch social separately","If feature confirmed, request social distribution","Provide one strong image optimised for GQ's social format"]},
+  {id:39,tier:3,name:"The Sartorialist (social)",type:"social",writer:"Scott Schuman",handle:"[Check bio]",email:"Coordinate with newsletter pitch",cat:"Menswear & Tailoring",url:"instagram.com/thesartorialist",
+   angle:"Coordinate with newsletter outreach. Visual content only — if Scott shoots Joseph, the social follows naturally.",
+   tone:"Visual-first. Let the work speak.",
+   steps:["Only approach social in conjunction with newsletter pitch","If portrait session agreed, social is organic","Do not request a social post — it happens or it doesn't"]},
+  {id:40,tier:3,name:"FiDi Families / Downtown Magazine",type:"social",writer:"Editorial Team",handle:"@fidi_families / @downtownmagazinenyc",email:"Contact via Instagram bio",cat:"NY Culture & Events",url:"instagram.com",
+   angle:"FiDi community accounts for local residents. An opening announcement and neighbourhood presence. Lower priority but high geographic relevance for building a local client base.",
+   tone:"Local and friendly. These are community accounts. Lead with the neighbourhood and the opening date. No luxury language needed here — plain and welcoming.",
+   steps:["DM via Instagram","Brief intro: 'Gestalt Atelier is opening in FiDi this September — a luxury image consultancy on [street]'","Offer to provide details for a neighbourhood opening mention","Follow up with opening announcement when confirmed"]},
+];
+</script>
+
+
+<script>
+let activeTier = 'all';
+let searchQuery = '';
+
+function renderContacts() {
+  const container = document.getElementById('contacts-container');
+  if (!container || typeof CONTACTS === 'undefined') return;
+
+  let filtered = CONTACTS.filter(c => {
+    const matchesTier = activeTier === 'all' ? true :
+      activeTier === 'newsletter' ? c.type === 'newsletter' :
+      activeTier === 'social' ? c.type !== 'newsletter' :
+      String(c.tier) === activeTier;
+    const q = searchQuery.toLowerCase();
+    const matchesSearch = !q || c.name.toLowerCase().includes(q) ||
+      (c.writer && c.writer.toLowerCase().includes(q)) ||
+      c.cat.toLowerCase().includes(q) ||
+      c.angle.toLowerCase().includes(q) ||
+      c.tone.toLowerCase().includes(q);
+    return matchesTier && matchesSearch;
+  });
+
+  const tierLabels = {1:'Tier 1 — Priority',2:'Tier 2 — High Value',3:'Tier 3 — Supporting'};
+  const tierColors = {1:'var(--accent)',2:'var(--A)',3:'var(--rule)'};
+  let html = '';
+  let lastTier = null;
+
+  filtered.forEach((c, i) => {
+    if (c.tier !== lastTier && activeTier === 'all') {
+      html += `<div class="tier-divider" style="color:${tierColors[c.tier]}">${tierLabels[c.tier]}</div>`;
+      lastTier = c.tier;
+    }
+    const rank = String(i+1).padStart(2,'0');
+    const typeLabel = c.type === 'newsletter' ? 'newsletter' : 'social/press';
+    html += `<div class="contact-card t${c.tier}" id="cc${c.id}">
+      <div class="contact-header" onclick="toggleContact(${c.id})">
+        <span class="contact-rank">${rank}</span>
+        <span class="contact-name">${c.name}</span>
+        <span class="contact-writer" style="margin-right:8px">${c.writer !== 'Editorial Team' && c.writer !== 'Partnerships' ? c.writer : ''}</span>
+        <span class="contact-type-badge ${c.type === 'newsletter' ? 'newsletter' : 'social'}">${typeLabel}</span>
+      </div>
+      <div class="contact-body" id="cb${c.id}" style="display:none">
+        <div class="contact-meta">
+          <span class="contact-meta-item">${c.cat}</span>
+          <span class="contact-meta-item">${c.handle}</span>
+          <span class="contact-meta-item" style="color:var(--accent);font-weight:500">${c.email}</span>
+          ${c.url ? `<a href="https://${c.url}" target="_blank" style="font-family:DM Mono,monospace;font-size:11px;color:var(--accent);background:#faf7f0;padding:4px 10px;border-radius:4px;text-decoration:none">${c.url} ↗</a>` : ''}
+        </div>
+        <div class="contact-section">
+          <div class="contact-section-label">Pitch angle</div>
+          <div class="contact-section-text">${c.angle}</div>
+        </div>
+        <div class="contact-section">
+          <div class="contact-section-label">Tone & voice guidance</div>
+          <div class="contact-section-text">${c.tone}</div>
+        </div>
+        <div class="contact-section">
+          <div class="contact-section-label">Step-by-step outreach</div>
+          <ol class="contact-steps">
+            ${c.steps.map((s,i) => `<li data-n="${i+1}">${s}</li>`).join('')}
+          </ol>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  if (filtered.length === 0) {
+    html = '<div style="padding:32px;text-align:center;color:var(--muted);font-family:DM Mono,monospace;font-size:13px">No contacts match your search.</div>';
+  }
+
+  container.innerHTML = html;
+}
+
+function toggleContact(id) {
+  const body = document.getElementById('cb' + id);
+  if (body) body.style.display = body.style.display === 'none' ? 'block' : 'none';
+}
+
+function setTier(tier, btn) {
+  activeTier = tier;
+  document.querySelectorAll('.tier-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderContacts();
+}
+
+function filterContacts(q) {
+  searchQuery = q;
+  renderContacts();
+}
+
+// Contacts rendered on tab switch via switchTab above
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(function(){
+  var mapInit = false;
+
+  function initMap(){
+    if(mapInit) return;
+    var el = document.getElementById('gestalt-map');
+    if(!el || el.offsetParent === null) return;
+    mapInit = true;
+
+    var map = L.map('gestalt-map', {scrollWheelZoom: false}).setView([40.7107, -74.0073], 16);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19
+    }).addTo(map);
+
+    // Enable scroll zoom on click
+    map.once('click', function(){ map.scrollWheelZoom.enable(); });
+
+    var colors = {
+      home:    '#c9b06e',
+      hotel:   '#7F77DD',
+      resto:   '#1D9E75',
+      realtor: '#e05d44',
+      barber:  '#e879f9',
+      coffee:  '#e67e22',
+      retail:  '#2980b9'
+    };
+
+    function icon(color, label){
+      return L.divIcon({
+        className: '',
+        html: '<div style="width:32px;height:32px;border-radius:50% 50% 50% 0;background:'+color+';border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.35);transform:rotate(-45deg);display:flex;align-items:center;justify-content:center"><span style="transform:rotate(45deg);font-size:13px;line-height:1">'+label+'</span></div>',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -34]
+      });
+    }
+
+    var pins = [
+      { lat:40.7107, lng:-74.0073, type:'home',    emoji:'◈', name:'Gestalt Atelier — Home Base', note:'140 Nassau St, NY 10038 · Opening September 2026' },
+      // Hotels
+      { lat:40.7112, lng:-74.0069, type:'hotel',   emoji:'🏨', name:'The Beekman Hotel', note:'123 Nassau St · Next door · Priority #1 · Concierge Director target' },
+      { lat:40.7126, lng:-74.0092, type:'hotel',   emoji:'🏨', name:'Four Seasons Downtown', note:'27 Barclay St · Guest Experience Director target' },
+      { lat:40.7052, lng:-74.0080, type:'hotel',   emoji:'🏨', name:'Hyatt Centric Wall Street', note:'75 Wall St · Corporate traveler guests' },
+      { lat:40.7120, lng:-74.0155, type:'hotel',   emoji:'🏨', name:'AKA Wall Street', note:'84 William St · Extended-stay exec residences' },
+      { lat:40.7010, lng:-74.0160, type:'hotel',   emoji:'🏨', name:'Casa Cipriani', note:'10 South End Ave · UHNW members club · Partnerships team' },
+      // Restaurants
+      { lat:40.7113, lng:-74.0068, type:'resto',   emoji:'🍽', name:'Temple Court', note:'5 Beekman St · Inside The Beekman · GM target' },
+      { lat:40.7062, lng:-74.0076, type:'resto',   emoji:'🍽', name:'Crown Shy', note:'70 Pine St (ground floor) · Michelin star · Chef-owner target' },
+      { lat:40.7065, lng:-74.0078, type:'resto',   emoji:'🍽', name:'Saga', note:'70 Pine St (63rd fl.) · 2 Michelin stars · Future event venue' },
+      { lat:40.7080, lng:-74.0089, type:'resto',   emoji:'🍽', name:'Manhatta', note:'28 Liberty St (60th fl.) · Events manager target' },
+      { lat:40.7047, lng:-74.0097, type:'resto',   emoji:'🍽', name:"Harry's", note:'1 Hanover Sq · FiDi institution · Owner is community fixture' },
+      // Realtors
+      { lat:40.7080, lng:-74.0065, type:'realtor', emoji:'🏢', name:'Keller Williams NYC', note:'90 John St · Around the corner · Target individual FiDi agents' },
+      { lat:40.7049, lng:-74.0072, type:'realtor', emoji:'🏢', name:'Mont Sky Real Estate', note:'99 Wall St · Boutique firm · Approach principals directly' },
+      // Barbers
+      { lat:40.7107, lng:-74.0074, type:'barber',  emoji:'✂', name:'Skullfade Barbers', note:'105 Nassau St · Same street · Walk in · Mutual referral partner' },
+      { lat:40.7116, lng:-74.0153, type:'barber',  emoji:'✂', name:'ADAM Grooming Atelier', note:'225 Liberty St (Brookfield Place) · Fellow atelier · Natural peer' },
+      { lat:40.7166, lng:-74.0069, type:'barber',  emoji:'✂', name:"Gentleman's Barber Spa", note:'200 Church St · Photo-shoot clientele' },
+      { lat:40.7161, lng:-74.0101, type:'barber',  emoji:'✂', name:'Tribeca Gents Barbershop', note:'157 Chambers St · 5★ · Manny knows everyone' },
+      // Independent coffee shops
+      { lat:40.7112, lng:-74.0063, type:'coffee',  emoji:'☕', name:'Variety Coffee Roasters', note:'140 Nassau St · Same building as Gestalt · Owner-run, FiDi regulars · Natural daily touchpoint' },
+      { lat:40.7093, lng:-74.0089, type:'coffee',  emoji:'☕', name:'Simpl Coffee', note:'59 Nassau St · 4.9★ · Independent, owner-run · Finance crowd regulars · Same street' },
+      { lat:40.7098, lng:-74.0091, type:'coffee',  emoji:'☕', name:'No Plates Coffee', note:'12 John St · 4.9★ · Owner George personally greets regulars · Creative + professional crowd' },
+      { lat:40.7093, lng:-74.0078, type:'coffee',  emoji:'☕', name:'Suited NYC', note:'45 John St · 4.6★ · Name signals the clientele · Coffee for the suited FiDi crowd' },
+      { lat:40.7091, lng:-74.0059, type:'coffee',  emoji:'☕', name:'MCM Coffee', note:'88 Fulton St · 4.8★ · Tiny independent gem · Owner-operated, loyal regulars' },
+      { lat:40.7080, lng:-74.0142, type:'coffee',  emoji:'☕', name:'REGULAR NYC', note:'19 Rector St · 4.9★ · Independent neighbourhood café · Friendly owner-run operation' },
+      // Independent retail & boutiques
+      { lat:40.7117, lng:-74.0066, type:'retail',  emoji:'🛍', name:'Nassau St Independent Retail Strip', note:'Nassau St · Several owner-run shops · Walk the strip and introduce yourself — same FiDi professional foot traffic as Gestalt' },
+      { lat:40.7117, lng:-74.0067, type:'retail',  emoji:'🛍', name:'I Love NY Gifts', note:'Park Row & Beekman St · Independent gift shop · High foot-traffic corner near The Beekman' },
+    ];
+
+    var legendLabels = {
+      home:    { color:'#c9b06e', label:'Gestalt Atelier' },
+      hotel:   { color:'#7F77DD', label:'Hotels' },
+      resto:   { color:'#1D9E75', label:'Restaurants' },
+      realtor: { color:'#e05d44', label:'Realtors' },
+      barber:  { color:'#e879f9', label:'Grooming' },
+      coffee:  { color:'#e67e22', label:'Independent Cafés' },
+      retail:  { color:'#2980b9', label:'Retail & Boutiques' },
+    };
+
+    pins.forEach(function(p){
+      L.marker([p.lat, p.lng], {icon: icon(colors[p.type], p.emoji)})
+        .addTo(map)
+        .bindPopup(
+          '<div style="font-family:Syne,sans-serif;min-width:200px">' +
+          '<div style="font-weight:700;font-size:14px;color:#1c1a16;margin-bottom:4px">'+p.name+'</div>' +
+          '<div style="font-size:12px;color:#555;line-height:1.6">'+p.note+'</div>' +
+          '</div>',
+          { maxWidth: 260 }
+        );
+    });
+
+    // Legend
+    var legend = L.control({position: 'bottomleft'});
+    legend.onAdd = function(){
+      var div = L.DomUtil.create('div');
+      div.style.cssText = 'background:#fff;padding:10px 14px;border-radius:8px;border:1px solid #d4cfc4;font-family:monospace;font-size:11px;line-height:2;box-shadow:0 2px 8px rgba(0,0,0,0.12)';
+      Object.keys(legendLabels).forEach(function(k){
+        var item = legendLabels[k];
+        div.innerHTML += '<div style="display:flex;align-items:center;gap:8px"><span style="width:12px;height:12px;border-radius:50%;background:'+item.color+';display:inline-block;flex-shrink:0"></span><span style="color:#3a3a3a">'+item.label+'</span></div>';
+      });
+      return div;
+    };
+    legend.addTo(map);
+  }
+
+  // Init when local tab is clicked
+  var origSwitch2 = window.switchTab;
+  window.switchTab = function(id, btn){
+    origSwitch2(id, btn);
+    if(id === 'local') setTimeout(initMap, 100);
+  };
+
+  // Also try on page load in case local tab is somehow active
+  window.addEventListener('load', function(){ setTimeout(initMap, 200); });
+})();
 </script>
 </body>
 </html>
