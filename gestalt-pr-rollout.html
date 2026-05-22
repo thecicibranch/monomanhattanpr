@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Gestalt Atelier — PR Rollout</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0a0a08;
+  --paper:#f5f3ee;
+  --cream:#ede9e1;
+  --rule:#d4cfc4;
+  --muted:#8a8580;
+  --deep:#1c1a16;
+  --A:#7F77DD;   /* Partner A — purple */
+  --B:#1D9E75;   /* Partner B — teal */
+  --both:#b8a88a; /* shared — warm gold */
+  --accent:#c9b06e;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Syne',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;overflow-x:hidden}
+
+/* ── Grain overlay ────────────────────────────────────────────── */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.6}
+
+/* ── Header ───────────────────────────────────────────────────── */
+.site-header{
+  background:var(--deep);
+  color:var(--paper);
+  padding:clamp(20px,4vw,36px) clamp(16px,4vw,48px);
+  display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;
+  border-bottom:1px solid #2e2c28;
+  position:sticky;top:0;z-index:100;
+}
+.site-header .wordmark{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(20px,3.5vw,30px);
+  font-weight:300;letter-spacing:0.12em;
+  text-transform:uppercase;line-height:1;
+}
+.site-header .wordmark span{color:var(--accent);font-style:italic;}
+.site-header .meta{
+  font-family:'DM Mono',monospace;font-size:11px;
+  color:#7a7870;letter-spacing:0.06em;text-align:right;line-height:1.8;
+}
+
+/* ── Nav tabs ─────────────────────────────────────────────────── */
+.nav{
+  background:var(--deep);
+  padding:0 clamp(16px,4vw,48px);
+  display:flex;gap:0;overflow-x:auto;
+  border-bottom:1px solid #2e2c28;
+  scrollbar-width:none;
+}
+.nav::-webkit-scrollbar{display:none}
+.nav button{
+  font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+  color:#6a6860;padding:14px 20px;border:none;background:none;cursor:pointer;
+  border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.2s;
+  flex-shrink:0;
+}
+.nav button:hover{color:#b8b4ae;}
+.nav button.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+/* ── Main layout ──────────────────────────────────────────────── */
+.main{max-width:1100px;margin:0 auto;padding:clamp(24px,4vw,56px) clamp(16px,4vw,48px);}
+.tab-panel{display:none}
+.tab-panel.active{display:block;animation:fadeUp 0.3s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── Section heading ──────────────────────────────────────────── */
+.section-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(28px,5vw,44px);font-weight:300;
+  letter-spacing:-0.01em;line-height:1.15;
+  margin-bottom:6px;
+}
+.section-title em{font-style:italic;color:var(--muted);}
+.section-sub{
+  font-family:'DM Mono',monospace;font-size:12px;
+  color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;
+  margin-bottom:32px;padding-bottom:24px;
+  border-bottom:1px solid var(--rule);
+}
+
+/* ── Legend ───────────────────────────────────────────────────── */
+.legend{display:flex;flex-wrap:wrap;gap:20px;margin-bottom:32px;}
+.legend-item{display:flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:0.05em}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ── Task cards ───────────────────────────────────────────────── */
+.cards{display:flex;flex-direction:column;gap:0;}
+.card{
+  border-left:3px solid transparent;
+  padding:20px 22px;
+  background:#fff;
+  margin-bottom:1px;
+  transition:background 0.15s;
+}
+.card:first-child{border-radius:8px 8px 0 0}
+.card:last-child{border-radius:0 0 8px 8px;margin-bottom:0}
+.card:only-child{border-radius:8px}
+.card:hover{background:#faf9f6}
+.card.A{border-left-color:var(--A)}
+.card.B{border-left-color:var(--B)}
+.card.both{border-left-color:var(--both)}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.card-title{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:5px}
+.card-body{font-size:14px;color:#555;line-height:1.7;max-width:680px}
+.card-tag{
+  font-family:'DM Mono',monospace;font-size:10px;font-weight:500;
+  letter-spacing:0.08em;text-transform:uppercase;
+  padding:3px 10px;border-radius:3px;flex-shrink:0;
+  display:inline-flex;align-items:center;gap:5px;
+}
+.card-tag.A{background:#ebe9fb;color:var(--A)}
+.card-tag.B{background:#e1f5ee;color:#085041}
+.card-tag.both{background:#f3eedf;color:#6b5a2f}
+.card-meta{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:10px;letter-spacing:0.04em}
+
+/* ── Grid layout for two-column ──────────────────────────────── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
+.col-header{
+  padding:16px 20px;border-radius:8px 8px 0 0;
+  font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
+}
+.col-header.A{background:#ebe9fb;color:var(--A)}
+.col-header.B{background:#e1f5ee;color:#085041}
+.col-header .col-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;letter-spacing:0;text-transform:none;margin-top:3px;color:var(--ink)}
+
+/* ── Timeline ─────────────────────────────────────────────────── */
+.timeline{display:flex;flex-direction:column;gap:0;}
+.tl-phase{margin-bottom:32px}
+.tl-phase-label{
+  font-family:'DM Mono',monospace;font-size:11px;font-weight:500;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);
+  margin-bottom:12px;display:flex;align-items:center;gap:12px;
+}
+.tl-phase-label::after{content:'';flex:1;height:1px;background:var(--rule)}
+.tl-item{
+  display:flex;gap:16px;padding:16px 0;
+  border-bottom:1px solid var(--rule);
+}
+.tl-item:last-child{border-bottom:none}
+.tl-week{
+  font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);
+  min-width:64px;padding-top:2px;letter-spacing:0.04em;flex-shrink:0;
+}
+.tl-content{flex:1;min-width:0}
+.tl-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.tl-desc{font-size:13px;color:#555;line-height:1.65}
+.tl-owner{
+  font-family:'DM Mono',monospace;font-size:10px;
+  padding:2px 8px;border-radius:3px;margin-top:6px;display:inline-block;
+}
+.tl-owner.A{background:#ebe9fb;color:var(--A)}
+.tl-owner.B{background:#e1f5ee;color:#085041}
+.tl-owner.both{background:#f3eedf;color:#6b5a2f}
+
+/* ── Info blocks ──────────────────────────────────────────────── */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:28px}
+.info-card{
+  background:#fff;border:1px solid var(--rule);border-radius:10px;
+  padding:20px;transition:box-shadow 0.15s;
+}
+.info-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.06)}
+.info-card .ic-label{
+  font-family:'DM Mono',monospace;font-size:10px;font-weight:500;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px
+}
+.info-card .ic-value{font-size:22px;font-weight:700;color:var(--ink);line-height:1.2;margin-bottom:4px}
+.info-card .ic-sub{font-size:13px;color:#666;line-height:1.55}
+
+/* ── Callout box ──────────────────────────────────────────────── */
+.callout{
+  border:1px solid var(--rule);border-radius:10px;
+  padding:20px 24px;margin-bottom:24px;
+  display:flex;align-items:flex-start;gap:16px;background:#fff;
+}
+.callout.accent{border-color:var(--accent);background:#faf7f0}
+.callout.A{border-color:var(--A);background:#f8f7fe}
+.callout.B{border-color:var(--B);background:#f3fbf8}
+.callout-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.callout-text .ct-title{font-size:14px;font-weight:600;margin-bottom:5px;color:var(--ink)}
+.callout-text .ct-body{font-size:13px;color:#555;line-height:1.7}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media(max-width:680px){
+  .two-col{grid-template-columns:1fr}
+  .info-grid{grid-template-columns:1fr}
+  .site-header .meta{display:none}
+}
+@media(max-width:400px){
+  .nav button{padding:12px 14px;font-size:10px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div>
+    <div class="wordmark">Gestalt <span>Atelier</span></div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:#5a5850;letter-spacing:0.08em;margin-top:4px">PR ROLLOUT DASHBOARD · FALL 2026</div>
+  </div>
+  <div class="meta">
+    Opening: September 2026<br>
+    Location: Financial District, NYC<br>
+    Sessions from $2,500
+  </div>
+</header>
+
+<nav class="nav">
+  <button class="active" onclick="switchTab('overview',this)">Overview</button>
+  <button onclick="switchTab('timeline',this)">Timeline</button>
+  <button onclick="switchTab('roles',this)">Role Division</button>
+  <button onclick="switchTab('mediakit',this)">Media Kit</button>
+  <button onclick="switchTab('outreach',this)">Outreach</button>
+  <button onclick="switchTab('event',this)">Launch Event</button>
+  <button onclick="switchTab('digital',this)">Digital Strategy</button>
+</nav>
+
+<main class="main">
+
+<!-- ── OVERVIEW ──────────────────────────────────────────────────── -->
+<div class="tab-panel active" id="tab-overview">
+  <h1 class="section-title">Pre-opening PR <em>strategy</em></h1>
+  <p class="section-sub">Gestalt Atelier · Image Consultancy · Fi-Di · Opening September 2026</p>
+
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="ic-label">Priority</div>
+      <div class="ic-value">Buzz First</div>
+      <div class="ic-sub">All pre-opening activity should build audience and generate anticipation — not explain the service.</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Positioning</div>
+      <div class="ic-value">Enigmatic Luxury</div>
+      <div class="ic-sub">Beyoncé-mode: rare or no posts. Every touchpoint should feel earned and rare, never common.</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Target Client</div>
+      <div class="ic-value">High-Earning Creatives</div>
+      <div class="ic-sub">Young creative professionals + high-ranking Fi-Di executives. Style as a personal branding asset.</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Session Rate</div>
+      <div class="ic-value">$2,500+</div>
+      <div class="ic-sub">Positioning demands media and channel partners that match this price point. No mass-market placements.</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Earned Media</div>
+      <div class="ic-value">Business Insider</div>
+      <div class="ic-sub">Joseph has an existing Business Insider quote — leverage immediately for media kit credibility.</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Brand Concept</div>
+      <div class="ic-value">Architecture of Dress</div>
+      <div class="ic-sub">Joseph's appreciation for architecture + grooming creates a singular editorial angle no competitor owns.</div>
+    </div>
+  </div>
+
+  <div class="callout accent">
+    <div class="callout-icon">◈</div>
+    <div class="callout-text">
+      <div class="ct-title">The one positioning sentence</div>
+      <div class="ct-body">Gestalt Atelier is where architecture meets attire — a luxury image consultancy in the Financial District that treats personal style as structural, not decorative. Sessions from $2,500.</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-icon">⚡</div>
+    <div class="callout-text">
+      <div class="ct-title">Crisis & reputation note</div>
+      <div class="ct-body">For any press mischaracterisation or negative coverage: Partner A drafts all written response and official statements. Partner B manages stakeholder calls and any direct media presence. This protocol holds regardless of the situation.</div>
+    </div>
+  </div>
+
+  <h2 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;margin-bottom:16px">G·E·S·T·A·L·T — The Brand Code</h2>
+  <div class="info-grid" style="margin-bottom:0">
+    <div class="info-card" style="padding:14px 18px">
+      <div style="display:flex;gap:12px;align-items:baseline">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--accent)">G</span>
+        <span style="font-size:13px;color:#444;line-height:1.5"><strong>Galant</strong> — Noble bearing, effortless authority in every room</span>
+      </div>
+    </div>
+    <div class="info-card" style="padding:14px 18px">
+      <div style="display:flex;gap:12px;align-items:baseline">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--accent)">E</span>
+        <span style="font-size:13px;color:#444;line-height:1.5"><strong>Elegant</strong> — Refined restraint that signals knowledge, not effort</span>
+      </div>
+    </div>
+    <div class="info-card" style="padding:14px 18px">
+      <div style="display:flex;gap:12px;align-items:baseline">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--accent)">S</span>
+        <span style="font-size:13px;color:#444;line-height:1.5"><strong>Sporty</strong> — Ease and movement without sacrificing precision</span>
+      </div>
+    </div>
+    <div class="info-card" style="padding:14px 18px">
+      <div style="display:flex;gap:12px;align-items:baseline">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--accent)">T</span>
+        <span style="font-size:13px;color:#444;line-height:1.5"><strong>Traditional</strong> — Timeless construction, tailoring as foundation</span>
+      </div>
+    </div>
+    <div class="info-card" style="padding:14px 18px">
+      <div style="display:flex;gap:12px;align-items:baseline">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--accent)">A</span>
+        <span style="font-size:13px;color:#444;line-height:1.5"><strong>Artistic</strong> — Style as self-expression and identity architecture</span>
+      </div>
+    </div>
+    <div class="info-card" style="padding:14px 18px">
+      <div style="display:flex;gap:12px;align-items:baseline">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--accent)">L</span>
+        <span style="font-size:13px;color:#444;line-height:1.5"><strong>Luminary</strong> — The client becomes the most noticed person in the room</span>
+      </div>
+    </div>
+    <div class="info-card" style="padding:14px 18px">
+      <div style="display:flex;gap:12px;align-items:baseline">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--accent)">T</span>
+        <span style="font-size:13px;color:#444;line-height:1.5"><strong>Tough</strong> — Durable style that holds up across decades and contexts</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TIMELINE ──────────────────────────────────────────────────── -->
+<div class="tab-panel" id="tab-timeline">
+  <h1 class="section-title">Pre-opening <em>timeline</em></h1>
+  <p class="section-sub">June 1 → September 1, 2026 · 13-week PR rollout</p>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--A)"></div>Partner A — Content & Editorial</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--B)"></div>Partner B — Activation & Creative</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--both)"></div>Both Partners</div>
+  </div>
+
+  <div class="tl-phase">
+    <div class="tl-phase-label">Phase 1 — Foundation (Jun 1 – Jun 21)</div>
+    <div class="tl-item">
+      <div class="tl-week">Jun 1–7</div>
+      <div class="tl-content">
+        <div class="tl-title">Media kit draft</div>
+        <div class="tl-desc">Partner A drafts all written sections: Joseph's bio, brand narrative, the Business Insider credential, GESTALT brand code explainer, and session overview. Partner B art directs visual layout, photography brief, and overall kit design.</div>
+        <span class="tl-owner both">Both</span>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-week">Jun 1–14</div>
+      <div class="tl-content">
+        <div class="tl-title">Messaging framework locked</div>
+        <div class="tl-desc">Develop the core brand voice, 3 headline positioning sentences, and approved language for each target segment (executive clients, creative professionals, press). Nothing goes out without this document approved by Joseph.</div>
+        <span class="tl-owner A">Partner A</span>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-week">Jun 8–14</div>
+      <div class="tl-content">
+        <div class="tl-title">Website and digital presence audit</div>
+        <div class="tl-desc">Review gestaltatelier.com against the messaging framework. Assess Instagram and LinkedIn for the enigmatic launch strategy. Recommend what lives on each channel and what stays intentionally absent.</div>
+        <span class="tl-owner both">Both</span>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-week">Jun 15–21</div>
+      <div class="tl-content">
+        <div class="tl-title">Photography and visual identity shoot</div>
+        <div class="tl-desc">Partner B directs a brand shoot for Joseph — architecture-inspired, minimal, suited. Images serve the media kit, website, and any future editorial pitches. Not social-first — editorial-first.</div>
+        <span class="tl-owner B">Partner B</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tl-phase">
+    <div class="tl-phase-label">Phase 2 — Outreach & Seeding (Jun 22 – Jul 19)</div>
+    <div class="tl-item">
+      <div class="tl-week">Jun 22–28</div>
+      <div class="tl-content">
+        <div class="tl-title">Press list + outreach emails drafted</div>
+        <div class="tl-desc">Partner A builds targeted press list (style, business, luxury lifestyle) and drafts the outreach emails and newsletters referenced in the brief. Emphasis on outlets whose readers are the target client — GQ, WSJ, The Cut, Bloomberg Pursuits, Business Insider (leveraging the existing quote).</div>
+        <span class="tl-owner A">Partner A</span>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-week">Jun 22–Jul 5</div>
+      <div class="tl-content">
+        <div class="tl-title">Micro-influencer outreach — Fi-Di hospitality tier</div>
+        <div class="tl-desc">Partner B initiates relationships with The Beekman Hotel, Four Seasons, and key Fi-Di restaurants and realtors. Position Gestalt Atelier as the concierge referral for high-net-worth guests needing styling. Not a pitch — a relationship.</div>
+        <span class="tl-owner B">Partner B</span>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-week">Jun 29–Jul 5</div>
+      <div class="tl-content">
+        <div class="tl-title">Business Insider follow-up pitch</div>
+        <div class="tl-desc">Partner A uses the existing Business Insider quote as a warm in — pitch a longer feature tied to the September opening. Frame: "The architect of your wardrobe opening in the Financial District." Offer Joseph for a pre-opening interview.</div>
+        <span class="tl-owner A">Partner A</span>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-week">Jul 6–19</div>
+      <div class="tl-content">
+        <div class="tl-title">Event concept finalised + venue confirmed</div>
+        <div class="tl-desc">Partner B sources and confirms event venue, coordinates with potential brand sponsors, and locks the guest list strategy. The launch event (Style & Architecture class) needs a confirmed date at least 8 weeks before opening.</div>
+        <span class="tl-owner B">Partner B</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tl-phase">
+    <div class="tl-phase-label">Phase 3 — Build (Jul 20 – Aug 16)</div>
+    <div class="tl-item">
+      <div class="tl-week">Jul 20–26</div>
+      <div class="tl-content">
+        <div class="tl-title">Educational video content — first 2 episodes</div>
+        <div class="tl-desc">Partner A produces the first two educational videos (tailoring/suiting focus). These are not social posts — they are brand-building content that establishes Joseph's authority. Release timing to be strategically chosen for maximum pre-opening attention.</div>
+        <span class="tl-owner A">Partner A</span>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-week">Jul 27–Aug 2</div>
+      <div class="tl-content">
+        <div class="tl-title">Launch event invitations out</div>
+        <div class="tl-desc">Partner B manages invitation design and distribution. Physical invitations for anchor guests (press, hotel concierge teams, Fi-Di realtors). Digital for wider network. The invite itself should look like a piece of Gestalt stationery.</div>
+        <span class="tl-owner B">Partner B</span>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-week">Aug 3–9</div>
+      <div class="tl-content">
+        <div class="tl-title">Press release — opening announcement</div>
+        <div class="tl-desc">Partner A writes and distributes the official opening press release. Embargo until 4 weeks before opening. Headline angle: "Gestalt Atelier opens in the Financial District — where architecture meets attire."</div>
+        <span class="tl-owner A">Partner A</span>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-week">Aug 10–16</div>
+      <div class="tl-content">
+        <div class="tl-title">LinkedIn strategy launch — credentials and myth-making</div>
+        <div class="tl-desc">Partner A writes Joseph's first LinkedIn article: a thought piece on why personal style is structural, not decorative. No promotional language — pure intellectual positioning. This piece should feel like it belongs in Harvard Business Review.</div>
+        <span class="tl-owner A">Partner A</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tl-phase">
+    <div class="tl-phase-label">Phase 4 — Opening Countdown (Aug 17 – Sep 1)</div>
+    <div class="tl-item">
+      <div class="tl-week">Aug 17–23</div>
+      <div class="tl-content">
+        <div class="tl-title">Pre-opening Style & Architecture event</div>
+        <div class="tl-desc">Partner B runs event production day-of. Partner A handles any live press and real-time media coverage. Both partners on-site. This is the first moment the world meets Gestalt Atelier in person.</div>
+        <span class="tl-owner both">Both</span>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-week">Aug 24–30</div>
+      <div class="tl-content">
+        <div class="tl-title">Post-event press follow-up</div>
+        <div class="tl-desc">Partner A follows up with all attending press within 48 hours. Provide any additional quotes, images, or background. Lock any pending features. Partner B follows up with all brand and hospitality contacts from the event.</div>
+        <span class="tl-owner both">Both</span>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-week">Sep 1</div>
+      <div class="tl-content">
+        <div class="tl-title">Doors open — September 2026</div>
+        <div class="tl-desc">Gestalt Atelier opens September 1, 2026. Press coverage should be live or in-flight. Micro-influencer and hospitality referral relationships active. Joseph's LinkedIn articles published. First session bookings confirmed before the doors open.</div>
+        <span class="tl-owner both">Both</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ROLES ──────────────────────────────────────────────────────── -->
+<div class="tab-panel" id="tab-roles">
+  <h1 class="section-title">Role <em>division</em></h1>
+  <p class="section-sub">Two-person agency · divided by strength · unified by client</p>
+
+  <div class="callout A" style="margin-bottom:24px">
+    <div class="callout-icon">◈</div>
+    <div class="callout-text">
+      <div class="ct-title">Joint ownership</div>
+      <div class="ct-body">Both partners own: client strategy, agency positioning, pricing & proposals, and new business. No client-facing decision on Gestalt Atelier is made unilaterally.</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="col-header A">
+        <div style="letter-spacing:0.1em">Partner A</div>
+        <div class="col-name">Content & Editorial Lead</div>
+        <div style="font-size:11px;font-weight:400;color:#6b5aab;margin-top:2px;font-family:'DM Mono',monospace">PR writing · video journalism · media strategy</div>
+      </div>
+      <div class="cards">
+        <div class="card A">
+          <div class="card-top">
+            <div>
+              <div class="card-title">Editorial Director</div>
+              <div class="card-body">Press releases, media statements, messaging framework, pitch letters, media kit copy, executive bio, and all backgrounders. Partner A owns the written word for Gestalt Atelier.</div>
+            </div>
+            <span class="card-tag A">A</span>
+          </div>
+        </div>
+        <div class="card A">
+          <div class="card-top">
+            <div>
+              <div class="card-title">Media Relations Lead</div>
+              <div class="card-body">Journalist relationship management, story development and placement, press list curation, and earned media tracking. Owns the Business Insider follow-up pitch.</div>
+            </div>
+            <span class="card-tag A">A</span>
+          </div>
+        </div>
+        <div class="card A">
+          <div class="card-top">
+            <div>
+              <div class="card-title">Video Content Strategist</div>
+              <div class="card-body">Produces the educational tailoring/suiting video series. Brand storytelling, interview production, and editorial reels. Content is authority-first, not social-first.</div>
+            </div>
+            <span class="card-tag A">A</span>
+          </div>
+        </div>
+        <div class="card A">
+          <div class="card-top">
+            <div>
+              <div class="card-title">LinkedIn & Thought Leadership</div>
+              <div class="card-body">Ghost-writes Joseph's LinkedIn articles and long-form content. Builds the "credentials and myth-making" layer of his personal brand. Tone: Harvard Business Review, not influencer.</div>
+            </div>
+            <span class="card-tag A">A</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-header B">
+        <div style="letter-spacing:0.1em">Partner B</div>
+        <div class="col-name">Activation & Creative Lead</div>
+        <div style="font-size:11px;font-weight:400;color:#085041;margin-top:2px;font-family:'DM Mono',monospace">Networking · event planning · graphic design</div>
+      </div>
+      <div class="cards">
+        <div class="card B">
+          <div class="card-top">
+            <div>
+              <div class="card-title">Stakeholder & Network Manager</div>
+              <div class="card-body">Builds relationships with The Beekman, Four Seasons, Fi-Di restaurants, realtors, and office building contacts. Positions Gestalt Atelier as the trusted concierge referral for high-net-worth individuals.</div>
+            </div>
+            <span class="card-tag B">B</span>
+          </div>
+        </div>
+        <div class="card B">
+          <div class="card-top">
+            <div>
+              <div class="card-title">Events Director</div>
+              <div class="card-body">Owns the Style & Architecture launch event end to end: venue, production, vendor management, guest experience, sponsor coordination, and day-of logistics.</div>
+            </div>
+            <span class="card-tag B">B</span>
+          </div>
+        </div>
+        <div class="card B">
+          <div class="card-top">
+            <div>
+              <div class="card-title">Creative Director</div>
+              <div class="card-body">Visual identity, media kit design, event invitation design, campaign collateral, pitch deck, and any social graphics. Every visual touchpoint should feel architectural and restrained.</div>
+            </div>
+            <span class="card-tag B">B</span>
+          </div>
+        </div>
+        <div class="card B">
+          <div class="card-top">
+            <div>
+              <div class="card-title">Brand Shoot Director</div>
+              <div class="card-body">Art directs the pre-opening photography shoot for Joseph. Images must work as editorial-grade assets — not social content. Think: a spread in Monocle, not an Instagram post.</div>
+            </div>
+            <span class="card-tag B">B</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Shared Responsibilities</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards">
+    <div class="card both">
+      <div class="card-top">
+        <div>
+          <div class="card-title">Account Management</div>
+          <div class="card-body">Primary client contact rotates by project phase. Both partners attend all Joseph briefings. Weekly status updates shared jointly.</div>
+        </div>
+        <span class="card-tag both">Both</span>
+      </div>
+    </div>
+    <div class="card both">
+      <div class="card-top">
+        <div>
+          <div class="card-title">Crisis Communications</div>
+          <div class="card-body">Partner A drafts all written response, statements, and messaging. Partner B manages stakeholder calls, media presence, and spokesperson logistics. Always both — never solo.</div>
+        </div>
+        <span class="card-tag both">Both</span>
+      </div>
+    </div>
+    <div class="card both">
+      <div class="card-top">
+        <div>
+          <div class="card-title">Social Media Strategy</div>
+          <div class="card-body">Strategy always joint. For Gestalt Atelier: the enigmatic "no-post" positioning must be maintained. Any post that goes live requires both partners to sign off given how rare each post will be.</div>
+        </div>
+        <span class="card-tag both">Both</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MEDIA KIT ──────────────────────────────────────────────────── -->
+<div class="tab-panel" id="tab-mediakit">
+  <h1 class="section-title">Media kit <em>brief</em></h1>
+  <p class="section-sub">What to build · what to include · what to never say</p>
+
+  <div class="callout accent">
+    <div class="callout-icon">◈</div>
+    <div class="callout-text">
+      <div class="ct-title">Owner: Both Partners — A writes, B designs</div>
+      <div class="ct-body">Target completion: End of Week 1. The media kit is the master document — every press pitch, every email, every conversation should be anchored to language in this kit.</div>
+    </div>
+  </div>
+
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">1. Brand Overview — 200 words max</div>
+          <div class="card-body">One page. Lead with the positioning sentence. Introduce Gestalt Atelier as an image consultancy, not a styling service. The word "trendy" never appears. Language should feel like a luxury hotel's brand book.</div>
+        </div>
+        <span class="card-tag A">A writes</span>
+      </div>
+    </div>
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">2. Joseph's Executive Bio</div>
+          <div class="card-body">Third-person, editorial. Lead with the Business Insider quote or credential. Include the architecture/grooming/fashion connection as a philosophical thread. Credentials, background, and the "why" of Gestalt Atelier. Keep under 300 words.</div>
+        </div>
+        <span class="card-tag A">A writes</span>
+      </div>
+    </div>
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">3. The GESTALT Method</div>
+          <div class="card-body">Explain the seven-pillar system (G·E·S·T·A·L·T) as editorial copy, not a listicle. This is the intellectual core of the brand. Two paragraphs that explain how Joseph's approach differs from every other stylist in the city.</div>
+        </div>
+        <span class="card-tag A">A writes</span>
+      </div>
+    </div>
+    <div class="card both">
+      <div class="card-top">
+        <div>
+          <div class="card-title">4. Services Overview</div>
+          <div class="card-body">Sessions from $2,500. Color consultations. Personal styling as a professional brand asset. Inventory rack curation. Do not list prices like a menu — frame each service as an investment in professional presence. Partner B designs the visual layout.</div>
+        </div>
+        <span class="card-tag both">Both</span>
+      </div>
+    </div>
+    <div class="card B">
+      <div class="card-top">
+        <div>
+          <div class="card-title">5. Visual Assets</div>
+          <div class="card-body">High-resolution photography of Joseph (editorial style), the Fi-Di location exterior/interior, and any product/rack photography. Minimum 5 images. All images should work as magazine editorial photography — not Instagram content.</div>
+        </div>
+        <span class="card-tag B">B directs</span>
+      </div>
+    </div>
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">6. Press Clips & Credentials</div>
+          <div class="card-body">Business Insider quote/mention prominently featured. Any other earned media. A short section on Joseph's experience, background, and any notable past clients (if permissioned). This section builds the "myth" referenced in the brief.</div>
+        </div>
+        <span class="card-tag A">A writes</span>
+      </div>
+    </div>
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">7. Contact & Booking</div>
+          <div class="card-body">Press inquiries vs. booking inquiries must be clearly separated. gestaltatelier.com as the primary URL. No social handles prominently featured — this signals the enigmatic positioning.</div>
+        </div>
+        <span class="card-tag A">A writes</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Language Rules</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="two-col">
+    <div class="cards">
+      <div class="card" style="border-left-color:#16a34a">
+        <div class="card-title" style="color:#16a34a;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;font-family:'DM Mono',monospace;margin-bottom:8px">✓ Use these</div>
+        <div class="card-body">image consultancy · personal brand architecture · investment · elevated · bespoke · refined · structural · precision · tailored · discerning · curated</div>
+      </div>
+    </div>
+    <div class="cards">
+      <div class="card" style="border-left-color:#dc2626">
+        <div class="card-title" style="color:#dc2626;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;font-family:'DM Mono',monospace;margin-bottom:8px">✗ Never say</div>
+        <div class="card-body">trendy · affordable · makeover · look good · style tips · fashion · influencer · content creator · brand deals · social media presence</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── OUTREACH ────────────────────────────────────────────────────── -->
+<div class="tab-panel" id="tab-outreach">
+  <h1 class="section-title">Outreach <em>strategy</em></h1>
+  <p class="section-sub">Press · micro-influencers · digital newsletters · email drafts</p>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--A)"></div>Partner A — press pitches, email copy</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--B)"></div>Partner B — relationship management, in-person</div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Tier 1 — Press Targets</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">Business Insider — Priority follow-up</div>
+          <div class="card-body">Leverage the existing quote as a warm relationship. Pitch a feature story tied to the September opening. Offer Joseph for a pre-opening interview. Angle: "The Financial District's new luxury image consultant is treating style like architecture."</div>
+        </div>
+        <span class="card-tag A">A leads</span>
+      </div>
+      <div class="card-meta">Timeline: Week 5 · Warm contact — highest conversion probability</div>
+    </div>
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">GQ, WSJ Style, The Cut</div>
+          <div class="card-body">Cold pitch with media kit. Target style editors and business-of-fashion writers. Angle: the consultancy model, the $2,500 session, and why Fi-Di's most powerful people are quietly getting dressed differently.</div>
+        </div>
+        <span class="card-tag A">A leads</span>
+      </div>
+      <div class="card-meta">Timeline: Week 4–5 · Include 3 high-res images from shoot</div>
+    </div>
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">Bloomberg Pursuits / Bloomberg Markets</div>
+          <div class="card-body">Angle from the business side: professional image as a competitive career advantage. The overlap of Bloomberg's reader (finance, executive) and Gestalt Atelier's client is near-perfect.</div>
+        </div>
+        <span class="card-tag A">A leads</span>
+      </div>
+      <div class="card-meta">Timeline: Week 5–6 · Business angle, not fashion angle</div>
+    </div>
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">Architectural Digest / Dezeen / Metropolis</div>
+          <div class="card-body">The architecture-meets-fashion editorial angle is genuinely original and underreported. Joseph's appreciation for architecture as a design philosophy creates a unique pitch to design-adjacent press that no other stylist can credibly make.</div>
+        </div>
+        <span class="card-tag A">A leads</span>
+      </div>
+      <div class="card-meta">Timeline: Week 6 · Requires strong visual assets from B's shoot</div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Tier 2 — Micro-Influencer & Hospitality</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card B">
+      <div class="card-top">
+        <div>
+          <div class="card-title">The Beekman Hotel & Four Seasons Downtown</div>
+          <div class="card-body">Propose a concierge referral arrangement. When a guest asks about personal shopping or style, the concierge refers Gestalt Atelier. Provide the hotels with a small, beautifully designed referral card and a short briefing document for concierge staff.</div>
+        </div>
+        <span class="card-tag B">B leads</span>
+      </div>
+      <div class="card-meta">Timeline: Week 4–5 · In-person meeting, not cold email</div>
+    </div>
+    <div class="card B">
+      <div class="card-top">
+        <div>
+          <div class="card-title">Fi-Di Realtors — Residential & Commercial</div>
+          <div class="card-body">Pitch Gestalt Atelier as a closing gift or onboarding service for high-end clients. A realtor who just closed a $3M apartment sale can offer a Gestalt Atelier session as a luxury welcome gift. The referral fee structure needs to be built.</div>
+        </div>
+        <span class="card-tag B">B leads</span>
+      </div>
+      <div class="card-meta">Timeline: Week 5–6 · Package a referral structure for B to present</div>
+    </div>
+    <div class="card B">
+      <div class="card-top">
+        <div>
+          <div class="card-title">Select Fi-Di Restaurants</div>
+          <div class="card-body">Identify 3–5 restaurants whose clientele overlaps with Gestalt Atelier's target. Not chain restaurants — power-lunch destinations. Partner B builds personal relationships with owners/managers and leaves a small number of printed media kits.</div>
+        </div>
+        <span class="card-tag B">B leads</span>
+      </div>
+      <div class="card-meta">Timeline: Week 5 · Relationship, not transaction</div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Email & Newsletter Draft Brief</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards">
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">Email Template A — Press cold pitch</div>
+          <div class="card-body">Subject line: "Opening in September — a different kind of image consultancy in the Financial District." Body: 4 sentences max before the media kit link. Lead with the Business Insider credential if the outlet is business-adjacent. Attach 2 images maximum.</div>
+        </div>
+        <span class="card-tag A">A drafts</span>
+      </div>
+    </div>
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">Email Template B — Newsletter / digital media</div>
+          <div class="card-body">For targeted newsletters (style, business, luxury lifestyle). Slightly warmer tone. Lead with the event invitation if timing aligns. End with: "Gestalt Atelier opens September 2026 in the Financial District. Sessions from $2,500."</div>
+        </div>
+        <span class="card-tag A">A drafts</span>
+      </div>
+    </div>
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">Email Template C — Hospitality / concierge brief</div>
+          <div class="card-body">One page, designed by B. Written by A. For hotel concierge teams and realtor contacts — explains what Gestalt Atelier is in plain language, who it's for, and how to refer. Includes a contact card insert.</div>
+        </div>
+        <span class="card-tag both">Both</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── EVENT ──────────────────────────────────────────────────────── -->
+<div class="tab-panel" id="tab-event">
+  <h1 class="section-title">Launch event — <em>Style & Architecture</em></h1>
+  <p class="section-sub">Pre-opening concept · Business Insider collaboration potential · 6–8 weeks before opening</p>
+
+  <div class="callout accent">
+    <div class="callout-icon">◈</div>
+    <div class="callout-text">
+      <div class="ct-title">Core concept</div>
+      <div class="ct-body">An intimate style and etiquette masterclass hosted by Joseph — framed around the architectural principles of dressing. Small room (30–50 guests max), high-calibre attendees, sponsored by 2–3 aligned brands. The event is a preview of the Gestalt Atelier experience, not a party.</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="cards">
+      <div class="card B">
+        <div class="card-top">
+          <div>
+            <div class="card-title">Event Production (Partner B)</div>
+            <div class="card-body">Venue sourcing (consider the Beekman's event spaces or a private Fi-Di gallery), vendor management, catering, invitation design, guest check-in, AV, and day-of run of show.</div>
+          </div>
+          <span class="card-tag B">B</span>
+        </div>
+      </div>
+      <div class="card B">
+        <div class="card-top">
+          <div>
+            <div class="card-title">Sponsor Coordination (Partner B)</div>
+            <div class="card-body">Identify 2–3 brands to sponsor or contribute. Think: a tailoring house, a cufflink or accessories brand, a luxury grooming brand. Each sponsor contributes product for gifting or demonstration — not signage.</div>
+          </div>
+          <span class="card-tag B">B</span>
+        </div>
+      </div>
+      <div class="card B">
+        <div class="card-top">
+          <div>
+            <div class="card-title">Guest List Strategy (Partner B)</div>
+            <div class="card-body">Curated: press, hotel contacts, Fi-Di realtors, potential anchor clients, and 3–5 micro-influencers in the architecture/style/business space. Guest count matters less than guest quality.</div>
+          </div>
+          <span class="card-tag B">B</span>
+        </div>
+      </div>
+    </div>
+    <div class="cards">
+      <div class="card A">
+        <div class="card-top">
+          <div>
+            <div class="card-title">Business Insider Partnership Pitch (Partner A)</div>
+            <div class="card-body">Pitch Business Insider as a co-presenting partner or media sponsor of the event. They provide coverage + attendance, Gestalt Atelier provides exclusivity for their reporter. This converts the existing media relationship into a formal editorial moment.</div>
+          </div>
+          <span class="card-tag A">A</span>
+        </div>
+      </div>
+      <div class="card A">
+        <div class="card-top">
+          <div>
+            <div class="card-title">Event Programme Copy (Partner A)</div>
+            <div class="card-body">Writes the event runsheet, host script, and any collateral copy. The programme is a designed object — printed, not projected. Partner A writes, Partner B designs.</div>
+          </div>
+          <span class="card-tag A">A</span>
+        </div>
+      </div>
+      <div class="card A">
+        <div class="card-top">
+          <div>
+            <div class="card-title">Post-event press release (Partner A)</div>
+            <div class="card-body">Published within 24 hours of the event. Include 3–4 photos by B (or a hired photographer). Distribute to full press list. This is the second PR moment — the event recap that reaches people who couldn't attend.</div>
+          </div>
+          <span class="card-tag A">A</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;margin-top:8px;display:flex;align-items:center;gap:12px">
+    <span>Masterclass Content Ideas — Joseph teaches</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="ic-label">Module 1</div>
+      <div class="ic-value" style="font-size:16px;font-family:'Cormorant Garamond',serif;font-weight:400">The Architecture of a Suit</div>
+      <div class="ic-sub">Lapels, structure, silhouette — how a jacket works like a building elevation. Best shirt for each jacket type.</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Module 2</div>
+      <div class="ic-value" style="font-size:16px;font-family:'Cormorant Garamond',serif;font-weight:400">Details That Signal Precision</div>
+      <div class="ic-sub">Cufflinks, pocket squares, collar choices — the small decisions that communicate everything about professional authority.</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Module 3</div>
+      <div class="ic-value" style="font-size:16px;font-family:'Cormorant Garamond',serif;font-weight:400">The Tie as a Statement</div>
+      <div class="ic-sub">Proportion, colour theory, the geometry of a Windsor knot vs. a four-in-hand. How to pair a tie with intention.</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Module 4 (optional)</div>
+      <div class="ic-value" style="font-size:16px;font-family:'Cormorant Garamond',serif;font-weight:400">Women's Power Dressing</div>
+      <div class="ic-sub">If the event is gender-inclusive: jewellery, accessories, and the structural principles of a woman's professional wardrobe. Brings in a broader guest list and broader press.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── DIGITAL ─────────────────────────────────────────────────────── -->
+<div class="tab-panel" id="tab-digital">
+  <h1 class="section-title">Digital <em>strategy</em></h1>
+  <p class="section-sub">Instagram · LinkedIn · website · the enigmatic brand question</p>
+
+  <div class="callout accent">
+    <div class="callout-icon">◈</div>
+    <div class="callout-text">
+      <div class="ct-title">The core tension — and how to resolve it</div>
+      <div class="ct-body">Joseph wants the Beyoncé-mode enigmatic presence (no posts, rare drops) but also wants to attract young creative professionals who discover brands digitally. The resolution: LinkedIn is where the substance lives. Instagram is where the mystique lives. Website is where bookings happen. These are three different channels with three different jobs.</div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Instagram — The Enigmatic Channel</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card both">
+      <div class="card-top">
+        <div>
+          <div class="card-title">The no-posts strategy — what it actually means</div>
+          <div class="card-body">No posts until opening. A single, impeccable bio. gestaltatelier.com in the link. An enigmatic profile image — architectural, not personal. When the first post eventually drops, it should feel like an event. Both partners approve every Instagram post before it publishes, always.</div>
+        </div>
+        <span class="card-tag both">Both</span>
+      </div>
+    </div>
+    <div class="card B">
+      <div class="card-top">
+        <div>
+          <div class="card-title">Stories at the launch event — the only pre-opening content</div>
+          <div class="card-body">Consider allowing Stories (not feed posts) from the launch event. Stories disappear — they feel exclusive and in-the-room. The attendees' own stories and shares become the social proof. Gestalt Atelier's own account stays clean.</div>
+        </div>
+        <span class="card-tag B">B</span>
+      </div>
+    </div>
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">Bio copy</div>
+          <div class="card-body">Maximum 3 lines. Suggested: "Image Consultancy. Financial District, New York. Sessions from $2,500 — gestaltatelier.com." Nothing else. No hashtags. No call to action. No emoji.</div>
+        </div>
+        <span class="card-tag A">A writes</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>LinkedIn — The Intellectual Channel</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">Joseph's personal profile — credentials and myth-making</div>
+          <div class="card-body">A fully built LinkedIn profile with a long-form About section. The Business Insider credential prominently featured. A headline that says something like: "Image Consultant · Financial District, NYC · Gestalt Atelier." Not "founder" or "CEO" — those words are everywhere.</div>
+        </div>
+        <span class="card-tag A">A writes</span>
+      </div>
+    </div>
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">First article — publish 6 weeks before opening</div>
+          <div class="card-body">Topic: "Why the most powerful people in the room are the most deliberately dressed ones." Intellectual, not advisory. No tips. A thesis, argued. This positions Joseph as a thinker, not a service provider. Target 800–1,000 words. Partner A ghost-writes, Joseph approves and publishes.</div>
+        </div>
+        <span class="card-tag A">A leads</span>
+      </div>
+    </div>
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">Second article — publish 2 weeks before opening</div>
+          <div class="card-body">Announce the opening. But frame it as a perspective piece: "What I've learned about how the city's decision-makers dress — and why I'm opening Gestalt Atelier in September." Personal, authoritative, forward-looking.</div>
+        </div>
+        <span class="card-tag A">A leads</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Website — The Booking Channel</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards" style="margin-bottom:28px">
+    <div class="card both">
+      <div class="card-top">
+        <div>
+          <div class="card-title">gestaltatelier.com audit — Week 2</div>
+          <div class="card-body">Review against the messaging framework. The website has one job: convert a curious visitor into a session inquiry. Every word on the site should be working toward that. Partner A rewrites copy, Partner B reviews visual design against brand.</div>
+        </div>
+        <span class="card-tag both">Both</span>
+      </div>
+    </div>
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">Gamified style profile — future consideration</div>
+          <div class="card-body">The brief mentions a gamified/app thing integrating the style profile quiz. This is a longer-term play — worth exploring for phase 2 (post-opening). Before September: the website should be beautiful, functional, and simple. One inquiry form. One booking path.</div>
+        </div>
+        <span class="card-tag A">A leads concept</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
+    <span>Educational Video Series</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
+  </div>
+  <div class="cards">
+    <div class="card A">
+      <div class="card-top">
+        <div>
+          <div class="card-title">The tailoring/suiting video series — draws in young creative professionals</div>
+          <div class="card-body">Partner A produces 3–4 short educational videos with Joseph. Topics match the masterclass modules: jacket structure, shirt pairings, cufflink choices, tie proportion. These live on YouTube primarily — then LinkedIn. Not Instagram Reels — the format is too social for the positioning.</div>
+        </div>
+        <span class="card-tag A">A produces</span>
+      </div>
+      <div class="card-meta">Release: 1 video per week, starting 4 weeks before opening · YouTube + LinkedIn only</div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+</script>
+</body>
+</html>
