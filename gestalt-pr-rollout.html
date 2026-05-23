@@ -192,9 +192,25 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   .two-col{grid-template-columns:1fr}
   .info-grid{grid-template-columns:1fr}
   .site-header .meta{display:none}
+  /* Contacts tab mobile fixes */
+  .contact-header{padding:12px 14px;gap:8px;flex-wrap:wrap}
+  .contact-rank{min-width:20px;font-size:10px}
+  .contact-name{font-size:13px;flex:1 1 120px;min-width:0;word-break:break-word}
+  .contact-writer{white-space:normal;font-size:10px;flex:1 1 100%;order:3;margin-right:0 !important}
+  .contact-type-badge{font-size:9px;padding:2px 6px;flex-shrink:0}
+  .contact-meta{flex-wrap:wrap;gap:6px}
+  .contact-meta-item{font-size:11px}
+  .tier-bar{gap:6px}
+  .tier-btn{padding:7px 11px;font-size:10px}
+  #btn-all300{margin-left:0;width:100%}
+  .all300-tables-wrapper{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{min-width:480px}
 }
 @media(max-width:400px){
   .nav button{padding:12px 14px;font-size:10px}
+  .contact-header{padding:10px 12px}
+  .contact-name{font-size:12px}
+  .tier-btn{padding:6px 10px;font-size:9px}
 }
 
 /* ── Contacts tab ─────────────────────────────────────────────── */
@@ -774,8 +790,7 @@ table tbody td{padding:8px 10px;border-bottom:1px solid var(--rule);vertical-ali
     </div>
   </div>
 </div>
-</div>
-</div>
+
 
 <!-- ── MEDIA KIT ──────────────────────────────────────────────────── -->
 <div class="tab-panel" id="tab-mediakit">
@@ -1282,6 +1297,7 @@ table tbody td{padding:8px 10px;border-bottom:1px solid var(--rule);vertical-ali
     </div>
   </div>
 
+</div>
 
 <!-- ── CONTACTS ──────────────────────────────────────────────────── -->
 <div class="tab-panel" id="tab-contacts">
@@ -1319,6 +1335,7 @@ table tbody td{padding:8px 10px;border-bottom:1px solid var(--rule);vertical-ali
     </div>
     <div style="background:#faf9f6;border:1px solid var(--rule);border-top:none;border-radius:0 0 10px 10px;padding:16px">
       <div style="font-size:13px;color:#555;line-height:1.7;margin-bottom:16px;padding:12px 14px;background:#fff;border-radius:8px;border:1px solid var(--rule)">Handles marked <strong style="color:#cc8800">⚠️</strong> could not be verified as active — check the profile before outreaching. For "[Check Mobile Bio]" contacts: open the Instagram profile, tap email in bio, or search "[Name] contact email". For newsletters, subscribe to a free issue and reply to the sender address directly.</div>
+    <div class="all300-tables-wrapper">
       <div style="font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:12px">
     <span>Social / Instagram Contacts — 150 accounts</span><span style="flex:1;height:1px;background:var(--rule);display:block"></span>
   </div>
@@ -1568,6 +1585,7 @@ table tbody td{padding:8px 10px;border-bottom:1px solid var(--rule);vertical-ali
 </tbody>
     </table>
   </div>
+    </div><!-- /all300-tables-wrapper -->
 </div>
     </div>
   </div>
@@ -1579,7 +1597,6 @@ table tbody td{padding:8px 10px;border-bottom:1px solid var(--rule);vertical-ali
       <div class="ct-body">The majority of contacts in the full spreadsheets list "[Check Mobile Bio]" for their email. The standard method: (1) Open the Instagram account, (2) tap the email button in the bio if present, or (3) search "[Name] email" or "[Publication] editorial contact" to find their press/editorial inbox. For Substack newsletters, most writers have a direct reply-to address visible when you subscribe to a free issue — subscribe, then email the reply-to directly. Never cold-DM and cold-email simultaneously.</div>
     </div>
   </div>
-</div>
 
 
 <!-- ── PARTNER A RESOURCES ─────────────────────────────────────────── -->
